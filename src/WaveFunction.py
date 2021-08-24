@@ -19,7 +19,7 @@ class Potential:
             psi_x = A_1 * np.exp(1j * k * x) + A_2 * np.exp(-1j * k * x)
         else:
             psi_x = 0
-        return psi_x + E
+        return psi_x
 
     @staticmethod
     def step(E, V_0, x, t=0):
@@ -92,7 +92,7 @@ class Potential:
         else:
             psi_x = A_3_1 * np.exp(1j * k_3 * x)
         psi_t = np.exp((-1j * E * t) / h_bar)
-        return psi_x * psi_t
+        return psi_x * psi_t + E
 
     @staticmethod
     def harmonic(omega, x, t=0):
