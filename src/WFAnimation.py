@@ -5,16 +5,16 @@ import matplotlib.image as mpimg
 from matplotlib import animation
 
 
-def render_frame(x_label='$x$', y_label='$\Psi$', show=True):
+def render_frame(x_label='$x$', y_label='Re{$\Psi(x,0)$}', x_limit=[-2, 2], y_limit=[-5, 5], show=False):
     plt.xlabel(r'' + x_label + '')
     plt.ylabel(r'' + y_label + '')
-    plt.xlim(-2., 2.)
-    plt.ylim(-2., 2.)
-    plt.gca().set_aspect('equal')
+    plt.xlim(x_limit[0], x_limit[1])
+    plt.ylim(y_limit[0], y_limit[1])
+    # plt.gca().set_aspect('equal')
     plt.show() if show else 0
 
 
-def render_anim(location):
+def render_anim(location, delay=50):
     fig = plt.gcf()
     frames = []
     dpath = 'img/temporary'
@@ -26,7 +26,7 @@ def render_anim(location):
         plt.gca().axis('off')
         frames.append([frame])
         os.remove(fpath)
-    animation.ArtistAnimation(fig, frames, interval=100, blit=True)
+    animation.ArtistAnimation(fig, frames, interval=delay, blit=True)
     plt.show()
 
 
@@ -43,7 +43,6 @@ def save_anim(location):
 
 
 def save_frame(location):
-    render_frame(show=False)
     ftype = location
     dpath = 'img/temporary'
     location = 'img/temporary/' + location
