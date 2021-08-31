@@ -17,7 +17,7 @@ def wave_function(function, *args):
         for E_n in np.linspace(0., 8., 100):
             for i in range(len(x)):
                 y = f(E_n, a, x[i])
-                y_real[i] = np.imag(y) + E_n
+                y_real[i] = y
             plt.plot(x, y_real)
             plt.plot(np.array([x_min-1, 0., 0., a, a, x_max+1]),
                      np.array([y_max+1, y_max+1, 0., 0., y_max+1, y_max+1]),
@@ -76,14 +76,15 @@ def wave_function(function, *args):
     elif function == 'harmonic':
         omega, = args
         V_osc = np.zeros_like(x)
-        for E_n in np.linspace(0., 8., 100):
-            n = np.floor(E_n - (omega / 2.) / omega)
+        for E_n in np.linspace(omega / 2., 30., 100):
+            n = np.floor((E_n - (omega / 2.)) / omega)
             if n < 0:
                 n = 0
+            E_0 = omega * (n + 1. / 2.)
             H_const, y_const = wft.hermite_const(n, omega)
             for i in range(len(x)):
                 y, V = f(omega, x[i])
-                y_real[i] = y * wft.hermite(n, x[i] * y_const) * H_const + E_n
+                y_real[i] = y * wft.hermite(n, x[i] * y_const) * H_const + E_0
                 V_osc[i] = V
             plt.plot(x, y_real)
             plt.plot(x, V_osc,
@@ -91,6 +92,6 @@ def wave_function(function, *args):
             plt.plot(np.array([-3., 3.]), np.array([E_n, E_n]),
                      linestyle='dashed', label=r'$E=$' + str(round(E_n, 2)))
             plt.legend()
-            wfa.render_frame(y_limit=[-2, 10])
+            wfa.render_frame(y_limit=[-2, 40])
             wfa.save_frame(function)
     wfa.save_anim(function)

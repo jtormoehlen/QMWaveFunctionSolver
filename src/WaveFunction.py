@@ -16,10 +16,13 @@ class Potential:
             A_2 = -A_1
             n = np.sqrt((2. * m_e * a ** 2 * E)) / (np.pi * h_bar)
             k = (np.floor(n) * np.pi) / a
+            E_0 = (h_bar ** 2 * np.pi ** 2 * np.floor(n)) / (2. * m_e * a ** 2)
+            print(E_0)
             psi_x = A_1 * np.exp(1j * k * x) + A_2 * np.exp(-1j * k * x)
         else:
             psi_x = 0
-        return psi_x
+            E_0 = 0
+        return np.imag(psi_x) + E_0
 
     @staticmethod
     def step(E, V_0, x, t=0):
