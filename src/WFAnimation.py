@@ -5,7 +5,7 @@ import matplotlib.image as mpimg
 from matplotlib import animation
 
 
-def render_frame(x_label='$x$', y_label='Re{$\Psi(x,0)$}', x_limit=[-2, 2], y_limit=[-5, 5], show=False):
+def render_frame(x_label='$x$', y_label='Re{$\Psi(x,t)$}', x_limit=[-2, 2], y_limit=[-5, 5], show=False):
     plt.xlabel(r'' + x_label + '')
     plt.ylabel(r'' + y_label + '')
     plt.xlim(x_limit[0], x_limit[1])

@@ -6,8 +6,9 @@ from WaveFunction import Potential
 
 def wave_function(function, *args):
     f = getattr(Potential, function)
-    x = np.linspace(-5., 5., 500)
+    x = np.linspace(-10., 10., 500)
     y_real = np.zeros_like(x)
+    y_abs = np.zeros_like(x)
     if function == 'wall':
         V_0, d = args
         x_min = -2
@@ -39,13 +40,19 @@ def wave_function(function, *args):
             wfa.render_frame(y_limit=[-2, 10])
             wfa.save_frame(function)
     if function == 'wave_packet':
-        p_0, V_0, N, = args
-        for t in np.linspace(0., 1., 100):
+        E_0, V_0 = args
+        for t in np.linspace(0., 20., 100):
             for i in range(len(x)):
-                y = f(p_0, V_0, N, x[i], t)
+                y = f(E_0, V_0, x[i], t)
                 y_real[i] = np.real(y)
-            plt.plot(x, y_real, label=r'$t=$' + str(round(t, 2)))
+                y_abs[i] = np.abs(y ** 2)
+            # plt.plot(x, y_real, label=r'$t=$' + str(round(t, 2)))
+            plt.plot(x, y_abs)
+            plt.plot(np.array([-10., 0., 10.]), np.array([0., V_0, V_0]),
+                     drawstyle='steps-post', linestyle='dashed', color='black', label=r'$V_0=$' + str(V_0))
+            plt.plot(np.array([-10., 10.]), np.array([E_0, E_0]),
+                     linestyle='dashed', label=r'$E=$' + str(round(E_0, 2)))
             plt.legend()
-            wfa.render_frame(y_limit=[-2, 10])
+            wfa.render_frame(y_limit=[-2, 2], x_limit=[-10, 10])
             wfa.save_frame(function)
     wfa.save_anim(function)
