@@ -39,7 +39,7 @@ def wave_function(function, *args):
             plt.legend()
             wfa.render_frame(y_limit=[-2, 10])
             wfa.save_frame(function)
-    if function == 'wave_packet':
+    if function == 'step_wave_packet':
         E_0, V_0 = args
         for t in np.linspace(0., 20., 100):
             for i in range(len(x)):
@@ -47,11 +47,27 @@ def wave_function(function, *args):
                 y_real[i] = np.real(y)
                 y_abs[i] = np.abs(y ** 2)
             # plt.plot(x, y_real, label=r'$t=$' + str(round(t, 2)))
-            plt.plot(x, y_abs)
+            plt.plot(x, y_abs, label=r'$t=$' + str(round(t, 2)))
             plt.plot(np.array([-10., 0., 10.]), np.array([0., V_0, V_0]),
                      drawstyle='steps-post', linestyle='dashed', color='black', label=r'$V_0=$' + str(V_0))
             plt.plot(np.array([-10., 10.]), np.array([E_0, E_0]),
-                     linestyle='dashed', label=r'$E=$' + str(round(E_0, 2)))
+                     linestyle='dashed', label=r'$E=$' + str(round(E_0, 5)))
+            plt.legend()
+            wfa.render_frame(y_limit=[-2, 2], x_limit=[-10, 10])
+            wfa.save_frame(function)
+    if function == 'wall_wave_packet':
+        E_0, V_0, a = args
+        for t in np.linspace(0., 20., 100):
+            for i in range(len(x)):
+                y = f(E_0, V_0, a, x[i], t)
+                y_real[i] = np.real(y)
+                y_abs[i] = np.abs(y ** 2)
+            # plt.plot(x, y_real, label=r'$t=$' + str(round(t, 2)))
+            plt.plot(x, y_abs, label=r'$t=$' + str(round(t, 2)))
+            plt.plot(np.array([-10, -a, -a, a, a, 10]), np.array([0., 0., V_0, V_0, 0., 0.]),
+                     linestyle='dashed', color='black', label=r'$V_0=$' + str(V_0))
+            plt.plot(np.array([-10., 10.]), np.array([E_0, E_0]),
+                     linestyle='dashed', label=r'$E=$' + str(round(E_0, 5)))
             plt.legend()
             wfa.render_frame(y_limit=[-2, 2], x_limit=[-10, 10])
             wfa.save_frame(function)
