@@ -6,7 +6,7 @@ if __name__ == '__main__':
 
     # wave_function('step', 4.)
     # wave_function('wall', 9., .1)
-    # wave_function('step_wave_packet', 0.5, 0.499)
-    wave_function('wall_wave_packet', 0.5, 2.0, 0.05)
+    wave_function('step_wave_packet', 0.99, 1.0)
+    # wave_function('wall_wave_packet', 0.45, 0.9, 0.1)
 
     sys.exit(0)

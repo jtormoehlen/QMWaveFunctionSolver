@@ -13,8 +13,10 @@ def M(x_0, v_0, sigma_x, x, t, E_0=0, V_0=0):
     if v_0 < 0:
         return theta(-x) * c * np.exp(-(x - x_0 - (v_0 * t)) ** 2 / (4. * sigma_x ** 2))
     else:
-        # if x >= 0:
-        #      v_0 = np.sqrt(2. * m * (E_0 - V_0)) / m
+        # x_l = x_0 - sigma_x
+        # if x_l + (v_0 * t) + (2. * sigma_x) >= 0:
+        #     if E_0 > V_0:
+        #         v_0 = np.sqrt(2. * ((E_0 - V_0) / m))
         return c * np.exp(-(x - x_0 - (v_0 * t)) ** 2 / (4. * sigma_x ** 2))
 
 
@@ -111,38 +113,53 @@ def psi_t(E, t):
 
 class Potential:
     @staticmethod
+    def classical(E, V_0, t=0):
+        x_0 = -5.
+        v_0 = np.sqrt((2. * E) / m)
+        x = (x_0 + (v_0 * t))
+        if x < 0:
+            return x
+        else:
+            delta_t = -x_0 / v_0
+            if E >= V_0:
+                v = np.sqrt((2. * (E - V_0)) / m)
+                return v * (t - delta_t)
+            else:
+                return -v_0 * (t - delta_t)
+
+    @staticmethod
     def step(E, V_0, x, t=0):
         psi_x = step_free(E, x) + step_reflect(E, V_0, x) + step_trans(E, V_0, x)
         return psi_x * psi_t(E, t)
 
     @staticmethod
-    def wall(E, V_0, d, x, t=0):
-        psi_x = wall_free(E, d, x) + wall_reflect(E, V_0, d, x) + wall_barr(E, V_0, d, x) + wall_trans(E, V_0, d, x)
+    def wall(E, V_0, a, x, t=0):
+        psi_x = wall_free(E, a, x) + wall_reflect(E, V_0, a, x) + wall_barr(E, V_0, a, x) + wall_trans(E, V_0, a, x)
         return psi_x * psi_t(E, t)
 
     @staticmethod
     def step_wave_packet(E_0, V_0, x, t=0):
-        sigma_p = 0.1
-        sigma_x0 = h_bar / (2. * sigma_p)
+        sigma_x0 = 0.5
+        sigma_p = h_bar / (2. * sigma_x0)
         sigma_v = sigma_p / 1.
         sigma_x = np.sqrt(sigma_x0 ** 2 + (sigma_v * t) ** 2)
         x_0 = -5.
         p_0 = np.sqrt(2. * m * E_0)
         v_0 = p_0 / m
-        M_free = M(x_0, v_0, sigma_x, x, t)
-        M_reflect = M(-x_0, -v_0, sigma_x, x, t)
-        M_trans = M(x_0, v_0, sigma_x, x, t)
+        M_free = M(x_0, v_0, sigma_x, x, t, E_0)
+        M_reflect = M(-x_0, -v_0, sigma_x, x, t, E_0)
+        M_trans = M(x_0, v_0, sigma_x, x, t, E_0, V_0)
         psi_n = (M_free * step_free(E_0, x) + M_reflect * step_reflect(E_0, V_0, x) + M_trans * step_trans(E_0, V_0, x)) * psi_t(E_0, t)
-        # psi_n = M_step_1_plus * free(E_0, x) * psi_t(E_0, t)
+        # psi_n = (M_free * step_free(E_0, x) + M_trans * step_trans(E_0, V_0, x)) * psi_t(E_0, t)
         return psi_n
 
     @staticmethod
     def wall_wave_packet(E_0, V_0, a, x, t=0):
-        sigma_p = 0.25
-        sigma_x0 = h_bar / (2. * sigma_p)
-        sigma_v = sigma_p / 1.
+        sigma_x0 = 0.5
+        sigma_p = h_bar / (2. * sigma_x0)
+        sigma_v = sigma_p / m
         sigma_x = np.sqrt(sigma_x0 ** 2 + (sigma_v * t) ** 2)
-        x_0 = -2.
+        x_0 = -5.
         p_0 = np.sqrt(2. * m * E_0)
         v_0 = p_0 / m
         M_free = M(x_0, v_0, sigma_x, x, t)
