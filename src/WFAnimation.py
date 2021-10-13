@@ -1,32 +1,35 @@
-import sys
-
-import numpy as np
-from matplotlib import animation, pyplot as plt
+from matplotlib import animation as anim
+from matplotlib import pyplot as plt
 
 
-fig = plt.figure(figsize=(6, 4))
-ax = plt.subplot(1, 1, 1)
-ax.set_xlim(-5, 5)
-ax.set_ylim(-2, 2)
-title = ax.set_title('')
-line_V, = ax.plot([], [], 'k--', label=r'$V(x)$')
-line_psi, = ax.plot([], [], label=r'$Re\{ \psi \}$')
-plt.legend(loc=4, fontsize=8, fancybox=False)
+class Animator:
+    def __init__(self, wave_packet):
+        self.time = 0.
+        self.wave_packet = wave_packet
+        self.fig, self.ax = plt.subplots()
+        plt.plot(self.wave_packet.x, self.wave_packet.potential, '--k')
 
+        self.time_text = self.ax.text(0.05, 0.95, '', horizontalalignment='left',
+                                      verticalalignment='top', transform=self.ax.transAxes)
+        self.prob_text = self.ax.text(0.05, 0.90, '', horizontalalignment='left',
+                                      verticalalignment='top', transform=self.ax.transAxes)
+        self.wave_packet_line, = self.ax.plot(self.wave_packet.x, self.wave_packet.evolve())
+        self.ax.set_xlim(self.wave_packet.x_begin, self.wave_packet.x_end)
+        self.ax.set_ylim(-1.0, 1.0)
+        self.ax.set_xlabel(r'$x$')
+        self.ax.set_ylabel(r'$|\psi(x,t)|^2$')
 
-def run(x, V, sol, close=True):
-    def init():
-        line_V.set_data(x, V * 0.001)
-        return line_V,
+    def update(self, data):
+        self.wave_packet_line.set_ydata(data)
+        return self.wave_packet_line
 
-    def animate(i):
-        line_psi.set_data(x, np.real(sol.y[:, i]))
-        title.set_text('Time = {0:1.3f}'.format(sol.t[i]))
-        return line_psi,
+    def time_step(self):
+        while True:
+            self.time += self.wave_packet.dt
+            self.time_text.set_text('Zeit: ' + str(self.time))
+            if self.time % 10 == 0:
+                self.prob_text.set_text('Wahrscheinlichkeit: ' + str(self.wave_packet.norm))
+            yield self.wave_packet.evolve()
 
-    anim = animation.FuncAnimation(fig, animate, init_func=init,
-                                   frames=len(sol.t), interval=200, blit=True)
-
-    print('Generating GIF')
-    anim.save('img/linear.gif', writer='imagemagick', fps=15, dpi=100, extra_args=['-layers Optimize'])
-    sys.exit(0) if close else 0
+    def animate(self):
+        self.ani = anim.FuncAnimation(self.fig, self.update, self.time_step, interval=5, blit=False)
