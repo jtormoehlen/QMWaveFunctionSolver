@@ -3,16 +3,17 @@ import WFGaussQuad as gq
 
 
 a = 1.0
-x_0 = -50
+x_0 = -30
 V_0 = 1.0
-E_0 = 0.95 * V_0
+E_0 = 0.9 * V_0
+m = 1.0
 
-k = np.sqrt(2 * E_0)
 sigma_E = E_0 / 100
 sigma_p = np.sqrt(2 * sigma_E)
 norm = 1 / ((2 * np.pi) ** 0.25 * np.sqrt(sigma_p))
 
-kappa = np.sqrt(2 * (V_0 - E_0))
+k = np.sqrt(2 * m * E_0)
+kappa = np.sqrt(2 * m * (V_0 - E_0))
 epsilon = kappa / k - k / kappa
 eta = kappa / k + k / kappa
 A = 1.0
@@ -33,14 +34,15 @@ def wall(x, t, p=0):
     kappa_0 = 2.0 * sigma_p * p + np.sqrt(2 * (V_0 - E_0))
     t_col = (-x_0 - a) / k
     for i in range(x.size):
-        x_i = x[i] - x_0
         if x[i] < -a:
-            psi[i] = (A * np.exp(1j * k_0 * (x[i] - x_0)) + B * np.exp(-1j * k_0 * (x[i] + x_0))) * time(t, k_0)
+            psi[i] = (A * np.exp(1j * k_0 * (x[i] - x_0)) +
+                      B * np.exp(-1j * k_0 * (x[i] + x_0))) * psi_t(t, k_0)
         elif -a <= x[i] <= a:
             if t >= t_col:
-                psi[i] = (C * np.exp(-kappa_0 * (x[i] - a)) + D * np.exp(kappa_0 * (x[i] + a))) * time(t - t_col, k_0)
+                psi[i] = (C * np.exp(-kappa_0 * (x[i] - a)) +
+                          D * np.exp(kappa_0 * (x[i] + a))) * psi_t(t - t_col, k_0)
         else:
-            psi[i] = F * np.exp(1j * k_0 * (x[i] - x_0)) * time(t, k_0)
+            psi[i] = F * np.exp(1j * k_0 * (x[i] - x_0)) * psi_t(t, k_0)
     return psi * norm
 
 
@@ -48,7 +50,7 @@ def sigma_x(t):
     return np.sqrt((1 / (2 * sigma_p)) ** 2 + sigma_p ** 2 * t ** 2)
 
 
-def time(t, p):
+def psi_t(t, p):
     return np.exp(-1j * (p ** 2 / 2) * t)
 
 
