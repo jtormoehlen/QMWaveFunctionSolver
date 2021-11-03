@@ -9,7 +9,7 @@ E_0 = 0.9 * V_0
 m = 1.0
 
 sigma_E = E_0 / 100
-sigma_p = np.sqrt(2 * sigma_E)
+sigma_p = np.sqrt(2 * m * sigma_E)
 norm = 1 / ((2 * np.pi) ** 0.25 * np.sqrt(sigma_p))
 
 k = np.sqrt(2 * m * E_0)
@@ -28,26 +28,22 @@ def free(x, t, p=0):
     return norm * np.exp(1j * k_0 * (x - x_0)) * np.exp(-1j * (k_0 ** 2 / 2) * t)
 
 
-def wall(x, t, p=0):
+def psi_x(x, t, p=0):
     psi = np.zeros(x.size, complex)
-    k_0 = 2.0 * sigma_p * p + k
+    p_0 = 2.0 * sigma_p * p + k
     kappa_0 = 2.0 * sigma_p * p + np.sqrt(2 * (V_0 - E_0))
     t_col = (-x_0 - a) / k
     for i in range(x.size):
         if x[i] < -a:
-            psi[i] = (A * np.exp(1j * k_0 * (x[i] - x_0)) +
-                      B * np.exp(-1j * k_0 * (x[i] + x_0))) * psi_t(t, k_0)
+            psi[i] = (A * np.exp(1j * p_0 * (x[i] - x_0)) +
+                      B * np.exp(-1j * p_0 * (x[i] + x_0))) * psi_t(t, p_0)
         elif -a <= x[i] <= a:
             if t >= t_col:
                 psi[i] = (C * np.exp(-kappa_0 * (x[i] - a)) +
-                          D * np.exp(kappa_0 * (x[i] + a))) * psi_t(t - t_col, k_0)
+                          D * np.exp(kappa_0 * (x[i] + a))) * psi_t(t - t_col, p_0)
         else:
-            psi[i] = F * np.exp(1j * k_0 * (x[i] - x_0)) * psi_t(t, k_0)
-    return psi * norm
-
-
-def sigma_x(t):
-    return np.sqrt((1 / (2 * sigma_p)) ** 2 + sigma_p ** 2 * t ** 2)
+            psi[i] = F * np.exp(1j * p_0 * (x[i] - x_0)) * psi_t(t, p_0)
+    return psi
 
 
 def psi_t(t, p):
@@ -55,7 +51,7 @@ def psi_t(t, p):
 
 
 def psi(x, t):
-    return gq.gauss_quad(x, t, wall)
+    return norm * gq.gauss_quad(x, t, psi_x)
 
 
 def V(x):
