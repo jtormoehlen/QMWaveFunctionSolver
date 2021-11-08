@@ -29,5 +29,5 @@ def update(i):
 
 anim = ani.FuncAnimation(fig, update, frames=40, interval=100, blit=True)
 plt.show()
-# anim.save('img/free.gif', writer='imagemagick', fps=10, dpi=100, extra_args=['-layers Optimize'])
+# anim.save('img/wall.gif', writer='imagemagick', fps=1, dpi=100, extra_args=['-layers Optimize'])
 # sys.exit(0)
