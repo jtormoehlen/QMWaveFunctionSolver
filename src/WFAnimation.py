@@ -10,11 +10,11 @@ fig = plt.figure(figsize=(6, 4))
 ax = plt.subplot(1, 1, 1)
 x_max = 50
 ax.set_xlim(-x_max, x_max)
-ax.set_ylim(-10, 40)
+ax.set_ylim(-10, 90)
 ax.set_xlabel(r'$x/$a')
 ax.set_ylabel(r'$|\psi(x,t)|^2/$a$^{-1}$')
 x = np.linspace(-x_max, x_max, 401)
-psi, = ax.plot(x, np.real(wf.psi(x, 0)))
+psi, = ax.plot(x, np.abs(wf.psi(x, 0))**2)
 max = max(np.abs(wf.psi(x, 0))**2)
 plt.tight_layout()
 ax.plot(x, wf.V(x) * max * 2, '--k')
@@ -27,7 +27,7 @@ def update(i):
     return psi,
 
 
-anim = ani.FuncAnimation(fig, update, interval=100, blit=True)
+anim = ani.FuncAnimation(fig, update, frames=40, interval=100, blit=True)
 plt.show()
 # anim.save('img/free.gif', writer='imagemagick', fps=10, dpi=100, extra_args=['-layers Optimize'])
 # sys.exit(0)

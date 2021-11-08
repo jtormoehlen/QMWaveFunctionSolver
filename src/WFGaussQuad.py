@@ -3,7 +3,7 @@ import numpy as np
 
 def gauss_hermite():
     n = 100
-    EPS = 1.0e-2
+    EPS = 1.0e-14
     x, w = np.zeros(n), np.zeros(n)
     m = int((n + 1) / 2)
     z = pp = 1.0

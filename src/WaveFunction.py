@@ -1,53 +1,46 @@
 import numpy as np
 import WFGaussQuad as gq
 
-
 a = 1.0
-x_0 = -30
+x_0 = -30 * a
 V_0 = 1.0
 E_0 = 0.9 * V_0
-m = 1.0
+m = 0.5
 
 sigma_E = E_0 / 100
-sigma_p = np.sqrt(2 * m * sigma_E)
+sigma_p = np.sqrt(m * sigma_E)
 norm = 1 / ((2 * np.pi) ** 0.25 * np.sqrt(sigma_p))
 
-k = np.sqrt(2 * m * E_0)
-kappa = np.sqrt(2 * m * (V_0 - E_0))
-epsilon = kappa / k - k / kappa
-eta = kappa / k + k / kappa
-A = 1.0
-F = A / ((np.cosh(2 * kappa * a) + (1j * epsilon * np.sinh(2 * kappa * a)) / 2) * np.exp(2j * k * a))
-B = F * ((-1j * eta * np.sinh(2 * kappa * a)) / 2)
-C = ((1 - 1j * k / kappa) * np.exp((kappa + 1j * k) * a) * F) / 2
-D = ((1 + 1j * k / kappa) * np.exp((-kappa + 1j * k) * a) * F) / 2
+p_ = np.sqrt(m * E_0)
+kappa_ = np.sqrt(m * (1.0 - E_0))
 
 
 def free(x, t, p=0):
-    k_0 = 2.0 * sigma_p * p + k
-    return norm * np.exp(1j * k_0 * (x - x_0)) * np.exp(-1j * (k_0 ** 2 / 2) * t)
+    p_0 = 2.0 * sigma_p * p + p_
+    return norm * np.exp(1j * p_0 * (x - x_0)) * psi_t(t, p_0)
 
 
 def psi_x(x, t, p=0):
     psi = np.zeros(x.size, complex)
-    p_0 = 2.0 * sigma_p * p + k
-    kappa_0 = 2.0 * sigma_p * p + np.sqrt(2 * (V_0 - E_0))
-    t_col = (-x_0 - a) / k
+    p_0 = 2 * sigma_p * p + p_
+    kappa_0 = 2 * sigma_p * p + kappa_
+    t = t - t_col(p_0)
+    A, B, C, D, F = psi_coeffs(p_0, kappa_0)
     for i in range(x.size):
         if x[i] < -a:
-            psi[i] = (A * np.exp(1j * p_0 * (x[i] - x_0)) +
-                      B * np.exp(-1j * p_0 * (x[i] + x_0))) * psi_t(t, p_0)
+            psi[i] = (A * np.exp(1j * p_0 * x[i]) +
+                      B * np.exp(-1j * p_0 * x[i]))
         elif -a <= x[i] <= a:
-            if t >= t_col:
-                psi[i] = (C * np.exp(-kappa_0 * (x[i] - a)) +
-                          D * np.exp(kappa_0 * (x[i] + a))) * psi_t(t - t_col, p_0)
-        else:
-            psi[i] = F * np.exp(1j * p_0 * (x[i] - x_0)) * psi_t(t, p_0)
+            psi[i] = (C * np.exp(-kappa_0 * x[i]) +
+                      D * np.exp(kappa_0 * x[i]))
+        elif x[i] > a:
+            psi[i] = F * np.exp(1j * p_0 * x[i])
+    psi = psi * psi_t(t, p_0)
     return psi
 
 
 def psi_t(t, p):
-    return np.exp(-1j * (p ** 2 / 2) * t)
+    return np.exp(-1j * (p ** 2 / m) * t)
 
 
 def psi(x, t):
@@ -62,7 +55,21 @@ def V(x):
     return V_N
 
 
+def psi_coeffs(p=p_, kappa=kappa_):
+    A = 1.0
+    F = A / ((np.cosh(2 * kappa) + (1j / 2) * (kappa / p - p / kappa) * np.sinh(2 * kappa)) * np.exp(2j * p))
+    B = F * (-1j / 2) * (kappa / p + p / kappa) * np.sinh(2 * kappa)
+    C = (F / 2) * (1 - (1j * p / kappa)) * np.exp(kappa + 1j * p)
+    D = (F / 2) * (1 + (1j * p / kappa)) * np.exp(-kappa + 1j * p)
+    return [A, B, C, D, F]
+
+
+def t_col(p):
+    return (-a - x_0) / (p / m)
+
+
 def info():
+    A, B, C, D, F = psi_coeffs()
     print('################################')
     print('Energy level: ' + str(E_0 / V_0) + ' V_0')
     print('Initial position: ' + str(x_0) + ' a')
