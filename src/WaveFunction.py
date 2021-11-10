@@ -1,15 +1,21 @@
 import numpy as np
+
 import WFGaussQuad as gq
 
+x_max = 50
+n_x = 201
+x, dx = np.linspace(-x_max, x_max, n_x, retstep=True)
+
 a = 1.0
-x_0 = -30 * a
+x_0 = -25
 V_0 = 1.0
-E_0 = 0.9 * V_0
+E_0 = 0.99
 m = 0.5
 
 sigma_E = E_0 / 100
 sigma_p = np.sqrt(m * sigma_E)
-norm = 1 / ((2 * np.pi) ** 0.25 * np.sqrt(sigma_p))
+sigma_x = 1 / (2 * sigma_p)
+# norm = 1 / ((2 * np.pi) ** 0.25 * np.sqrt(sigma_p))
 
 p_ = np.sqrt(m * E_0)
 kappa_ = np.sqrt(m * (1.0 - E_0))
@@ -17,7 +23,7 @@ kappa_ = np.sqrt(m * (1.0 - E_0))
 
 def free(x, t, p=0):
     p_0 = 2.0 * sigma_p * p + p_
-    return norm * np.exp(1j * p_0 * (x - x_0)) * psi_t(t, p_0)
+    return np.exp(1j * p_0 * (x - x_0)) * psi_t(t, p_0)
 
 
 def psi_x(x, t, p=0):
@@ -43,8 +49,8 @@ def psi_t(t, p):
     return np.exp(-1j * (p ** 2 / m) * t)
 
 
-def psi(x, t):
-    return norm * gq.gauss_quad(x, t, psi_x)
+def psi(x, t, f=psi_x):
+    return gq.gauss_quad(x, t, f)
 
 
 def V(x):
