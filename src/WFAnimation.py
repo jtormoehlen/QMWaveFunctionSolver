@@ -50,7 +50,7 @@ plt.tight_layout()
 anim = ani.FuncAnimation(fig, update, init_func=init,
                          frames=len(t), interval=100, blit=True)
 
-if True:
+if False:
     anim.save('img/wall.gif', writer='imagemagick',
               fps=10, dpi=100, extra_args=['-layers Optimize'])
     sys.exit(0)
