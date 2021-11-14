@@ -2,7 +2,7 @@ import numpy as np
 
 # Discretization of spatial coords
 x_max = 100
-n_x = 401
+n_x = 201
 x, dx = np.linspace(-x_max, x_max, n_x, retstep=True)
 
 # Initial values: position x_0, energy E_0, energy uncertainty DeltaE
@@ -10,7 +10,7 @@ x, dx = np.linspace(-x_max, x_max, n_x, retstep=True)
 a = 1.0
 x_0 = -50
 V_0 = 1.0
-E_0 = 0.5
+E_0 = 0.3
 m = 0.5
 
 sigma_E = E_0 / 100
@@ -51,3 +51,22 @@ def t_col(p=p_):
 def norm(psi):
     """Normalization of wave function |psi|^2."""
     return np.sum(np.abs(psi) ** 2 * dx)
+
+
+def prob(psi2, x_start, x_end):
+    """Probability of finding the particle in [x_start, x_end] based on formula: sum{|psi|^2*dx}."""
+    P = 0.0
+    for index, value in enumerate(x):
+        if x_start <= value <= x_end:
+            P += psi2[index] * dx
+    return P
+
+
+def info():
+    """Some information about initial parameters for the console."""
+    print('Parameters######################\n'
+          f'Mass number: {m}\n'
+          f'Energy level: {E_0 / V_0} V_0\n'
+          f'Initial position: {x_0} a\n'
+          f'Barrier width: {2 * a} a\n'
+          '################################')

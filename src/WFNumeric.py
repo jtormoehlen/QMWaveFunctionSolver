@@ -11,7 +11,7 @@ V = wf.V(x)
 
 # Discretization of time coords from zero to collision time
 t_0 = 0.0
-t_n = 1.5 * wf.t_col()
+t_n = wf.t_col()
 dt = t_n / 100
 t_N = np.arange(t_0, t_n, dt)
 
@@ -31,24 +31,54 @@ class PsiRK:
 
     @staticmethod
     def eq(t, psi):
+        """Right-hand side of schrodinger-equation."""
         H = hamilton()
         return 1j * -H.dot(psi)
 
+    @staticmethod
+    def info(psi):
+        norm = wf.norm(psi)
+        refl = wf.prob(np.abs(psi) ** 2 / norm, -wf.x_max, -wf.a)
+        trans = wf.prob(np.abs(psi) ** 2 / norm, wf.a, wf.x_max)
+        print('RUNGE-KUTTA\n'
+              f'Reflection probability: {round(refl, 4)}\n'
+              f'Transmission probability: {round(trans, 4)}')
+
 
 class PsiCN:
-    """Discretization of position and time coords."""
+    """Discretization of position and time coords by CRANK-NICOLSON procedure."""
     H = hamilton()
     implicit = (sp.sparse.eye(x.size) - dt / 2j * H).tocsc()
     explicit = (sp.sparse.eye(x.size) + dt / 2j * H).tocsc()
     evolution_matrix = ln.inv(implicit).dot(explicit).tocsr()
 
     def __init__(self):
+        """Initiate free wavepacket psi0."""
         self.psi = wfa.psi(x, 0, wfa.psi_x)
 
-    def solve(self, t):
-        """Solve schrodinger-equation by CRANK-NICOLSON procedure for initial free wavepacket."""
+    def evolve(self, t):
+        """Solve schrodinger-equation by applying CN-matrix."""
         if 0 < t < t_N.size:
             self.psi = self.evolution_matrix.dot(self.psi)
         else:
             self.psi = wfa.psi(x, 0, wfa.psi_x)
         return self.psi
+
+    def custom_evolve(self, t_end):
+        """CN-matrix with custom time step Delta t applied to psi0."""
+        psi0 = wfa.psi(x, 0, wfa.psi_x)
+        delta_t = 0.0
+        while delta_t <= t_end:
+            psi0 = self.evolution_matrix.dot(psi0)
+            delta_t += dt
+        return psi0
+
+    def info(self):
+        """Some information about scattering probabilities for the console."""
+        psi = self.custom_evolve(t_n)
+        norm = wf.norm(psi)
+        refl = wf.prob(np.abs(psi) ** 2 / norm, -wf.x_max, -wf.a)
+        trans = wf.prob(np.abs(psi) ** 2 / norm, wf.a, wf.x_max)
+        print('CRANK-NICOLSON\n'
+              f'Reflection probability: {round(refl, 4)}\n'
+              f'Transmission probability: {round(trans, 4)}')

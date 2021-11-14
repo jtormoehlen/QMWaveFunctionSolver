@@ -23,8 +23,8 @@ psi_an, = ax.plot(x, np.abs(an) ** 2, label='Analytical')
 norm_an = wf.norm(an)
 
 cn = wfn.PsiCN()
-psi_cn, = ax.plot(x, np.abs(cn.solve(0)) ** 2, label='Crank-Nicolson')
-norm_cn = wf.norm(cn.solve(0))
+psi_cn, = ax.plot(x, np.abs(cn.evolve(0)) ** 2, label='Crank-Nicolson')
+norm_cn = wf.norm(cn.evolve(0))
 
 rk = wfn.PsiRK().solve()
 psi_rk, = ax.plot(x, np.abs(rk.y[:, 0]) ** 2, label='Runge-Kutta')
@@ -41,7 +41,7 @@ def update(i):
 
     psi_rk.set_ydata(np.abs(rk.y[:, i]) ** 2 / norm_rk)
 
-    psi_cn.set_ydata(np.abs(cn.solve(i)) ** 2 / norm_cn)
+    psi_cn.set_ydata(np.abs(cn.evolve(i)) ** 2 / norm_cn)
     return psi_an, psi_rk, psi_cn
 
 
@@ -50,6 +50,10 @@ plt.tight_layout()
 anim = ani.FuncAnimation(fig, update, init_func=init,
                          frames=len(t), interval=100, blit=True)
 
+wf.info()
+wfa.info()
+wfn.PsiRK().info(rk.y[:, wfn.t_N.size - 1])
+cn.info()
 if False:
     anim.save('img/wall.gif', writer='imagemagick',
               fps=10, dpi=100, extra_args=['-layers Optimize'])

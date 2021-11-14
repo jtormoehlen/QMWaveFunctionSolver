@@ -5,7 +5,7 @@ p_ = wf.p_
 k_ = wf.kappa_
 a = wf.a
 
-# Coefficients of stationary solution (scattering on a barrier)
+# Coefficients of stationary solution (scattering on a barrier) for all three regions
 A = 1.0
 F = A / ((np.cosh(2 * k_ * a) + (1j / 2) * (k_ / p_ - p_ / k_) * np.sinh(2 * k_ * a)) * np.exp(2j * p_ * a))
 B = F * (-1j / 2) * (k_ / p_ + p_ / k_) * np.sinh(2 * k_ * a)
@@ -33,7 +33,7 @@ def psi_x(x, t, p=0):
 
 
 def gauss_hermite():
-    """Computation of GAUSS-HERMITE abscissas and weights by orthonormal set of polynomials."""
+    """Computation of GAUSS-HERMITE abscissas and weights with orthonormal set of polynomials."""
     n = 100
     EPS = 1.0e-14
     x, w = np.zeros(n), np.zeros(n)
@@ -81,16 +81,12 @@ def psi(x, t, phi_x):
     F = 0.0
 
     for j in range(0, len(x_N), 1):
-        F = F + w[j] * phi_x(x, t, x_N[j])
+        F += w[j] * phi_x(x, t, x_N[j])
     return F
 
 
 def info():
-    print('################################')
-    print('Mass number: ' + str(wf.m))
-    print('Energy level: ' + str(wf.E_0 / wf.V_0) + ' V_0')
-    print('Initial position: ' + str(wf.x_0) + ' a')
-    print('Barrier width: ' + str(2 * wf.a) + ' a')
-    print('Transmission probability: ' + str(round(np.abs(F / A) ** 2, 4)))
-    print('Reflection probability: ' + str(round(np.abs(B / A) ** 2, 4)))
-    print('################################')
+    """Some information about scattering probabilities for the console."""
+    print('Analytical\n'
+          f'Reflection probability: {round(np.abs(B / A) ** 2, 4)}\n'
+          f'Transmission probability: {round(np.abs(F / A) ** 2, 4)}')
