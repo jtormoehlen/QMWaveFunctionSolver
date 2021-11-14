@@ -37,12 +37,8 @@ class PsiRK:
 
     @staticmethod
     def info(psi):
-        norm = wf.norm(psi)
-        refl = wf.prob(np.abs(psi) ** 2 / norm, -wf.x_max, -wf.a)
-        trans = wf.prob(np.abs(psi) ** 2 / norm, wf.a, wf.x_max)
-        print('RUNGE-KUTTA\n'
-              f'Reflection probability: {round(refl, 4)}\n'
-              f'Transmission probability: {round(trans, 4)}')
+        print('\nRUNGE-KUTTA')
+        wf.prob_info(psi)
 
 
 class PsiCN:
@@ -76,9 +72,5 @@ class PsiCN:
     def info(self):
         """Some information about scattering probabilities for the console."""
         psi = self.custom_evolve(t_n)
-        norm = wf.norm(psi)
-        refl = wf.prob(np.abs(psi) ** 2 / norm, -wf.x_max, -wf.a)
-        trans = wf.prob(np.abs(psi) ** 2 / norm, wf.a, wf.x_max)
-        print('CRANK-NICOLSON\n'
-              f'Reflection probability: {round(refl, 4)}\n'
-              f'Transmission probability: {round(trans, 4)}')
+        print('\nCRANK-NICOLSON')
+        wf.prob_info(psi)

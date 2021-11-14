@@ -85,8 +85,10 @@ def psi(x, t, phi_x):
     return F
 
 
-def info():
+def info(psi):
     """Some information about scattering probabilities for the console."""
-    print('Analytical\n'
+    print('\nAnalytical\n'
           f'Reflection probability: {round(np.abs(B / A) ** 2, 4)}\n'
           f'Transmission probability: {round(np.abs(F / A) ** 2, 4)}')
+    print('\nGAUSS-QUAD')
+    wf.prob_info(psi)

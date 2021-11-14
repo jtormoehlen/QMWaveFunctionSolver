@@ -2,7 +2,7 @@ import numpy as np
 
 # Discretization of spatial coords
 x_max = 100
-n_x = 201
+n_x = 1000
 x, dx = np.linspace(-x_max, x_max, n_x, retstep=True)
 
 # Initial values: position x_0, energy E_0, energy uncertainty DeltaE
@@ -62,7 +62,7 @@ def prob(psi2, x_start, x_end):
     return P
 
 
-def info():
+def param_info():
     """Some information about initial parameters for the console."""
     print('Parameters######################\n'
           f'Mass number: {m}\n'
@@ -70,3 +70,11 @@ def info():
           f'Initial position: {x_0} a\n'
           f'Barrier width: {2 * a} a\n'
           '################################')
+
+
+def prob_info(psi):
+    psi2_norm = norm(psi)
+    refl = prob(np.abs(psi) ** 2 / psi2_norm, -x_max, -a)
+    trans = prob(np.abs(psi) ** 2 / psi2_norm, a, x_max)
+    print(f'Reflection probability: {round(refl, 4)}\n'
+          f'Transmission probability: {round(trans, 4)}')
