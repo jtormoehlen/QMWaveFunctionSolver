@@ -14,7 +14,7 @@ D = (F / 2) * (1 + (1j * p_ / k_)) * np.exp((-k_ + 1j * p_) * a)
 
 
 def psi_x(x, t, p=0):
-    """Stationary solution (scattering on a barrier) superpositioned with the time dependent solution."""
+    """Stationary solution (scattering by a rectangle-barrier) superpositioned with psi_t."""
     psi_xt = np.zeros(x.size, complex)
     p_0 = 2 * wf.sigma_p * p + p_
     k_0 = 2 * wf.sigma_p * p + k_
@@ -86,7 +86,7 @@ def psi(x, t, phi_x):
 
 
 def info(psi):
-    """Some information about scattering probabilities for the console."""
+    """Scattering probabilities for the console."""
     print('\nAnalytical\n'
           f'Reflection probability: {round(np.abs(B / A) ** 2, 4)}\n'
           f'Transmission probability: {round(np.abs(F / A) ** 2, 4)}')

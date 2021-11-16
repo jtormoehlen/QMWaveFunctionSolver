@@ -1,7 +1,7 @@
 import numpy as np
 
 # Discretization of spatial coords
-x_max = 100
+x_max = 100.0
 n_x = 1000
 x, dx = np.linspace(-x_max, x_max, n_x, retstep=True)
 
@@ -10,14 +10,14 @@ x, dx = np.linspace(-x_max, x_max, n_x, retstep=True)
 a = 1.0
 x_0 = -50
 V_0 = 1.0
-E_0 = 0.3
+E_0 = 0.9
 m = 0.5
 
 sigma_E = E_0 / 100
 sigma_p = np.sqrt(m * sigma_E)
 
 p_ = np.sqrt(m * E_0)
-kappa_ = np.sqrt(m * (1.0 - E_0))
+kappa_ = np.sqrt(m * (V_0 - E_0))
 
 
 def psi_0(x, t, p=0):
@@ -53,7 +53,7 @@ def norm(psi):
     return np.sum(np.abs(psi) ** 2 * dx)
 
 
-def prob(psi2, x_start, x_end):
+def prob(psi2, x_start=-x_max, x_end=x_max):
     """Probability of finding the particle in [x_start, x_end] based on formula: sum{|psi|^2*dx}."""
     P = 0.0
     for index, value in enumerate(x):
@@ -73,6 +73,7 @@ def param_info():
 
 
 def prob_info(psi):
+    """Prototype for logging scattering probabilities."""
     psi2_norm = norm(psi)
     refl = prob(np.abs(psi) ** 2 / psi2_norm, -x_max, -a)
     trans = prob(np.abs(psi) ** 2 / psi2_norm, a, x_max)

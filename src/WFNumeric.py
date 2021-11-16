@@ -37,6 +37,7 @@ class PsiRK:
 
     @staticmethod
     def info(psi):
+        """Scattering probabilities for the console."""
         print('\nRUNGE-KUTTA')
         wf.prob_info(psi)
 
@@ -70,7 +71,7 @@ class PsiCN:
         return psi0
 
     def info(self):
-        """Some information about scattering probabilities for the console."""
+        """Scattering probabilities for the console."""
         psi = self.custom_evolve(t_n)
         print('\nCRANK-NICOLSON')
         wf.prob_info(psi)
