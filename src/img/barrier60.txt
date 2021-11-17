@@ -1,0 +1,18 @@
+Parameters######################
+Mass number: 0.5
+Energy level: 0.6 V_0
+Initial position: -50 a
+Barrier width: 2.0 a
+################################
+Analytical
+Reflection probability: 0.5194
+Transmission probability: 0.4806
+GAUSS-QUAD
+Reflection probability: 0.5194
+Transmission probability: 0.4805
+RUNGE-KUTTA
+Reflection probability: 0.5214
+Transmission probability: 0.4785
+CRANK-NICOLSON
+Reflection probability: 0.5214
+Transmission probability: 0.4785
