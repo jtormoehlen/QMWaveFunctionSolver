@@ -10,7 +10,7 @@ x, dx = np.linspace(-x_max, x_max, n_x, retstep=True)
 a = 1.0
 x_0 = -50
 V_0 = 1.0
-E_0 = 0.9
+E_0 = 0.3
 m = 0.5
 
 sigma_E = E_0 / 100

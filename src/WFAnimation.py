@@ -63,9 +63,9 @@ wf.param_info()
 wfa.info(wfa.psi(x, wf.t_col(), wfa.psi_x))
 wfn.PsiRK().info(rk.y[:, wfn.t_N.size - 1])
 cn.info()
-if True:
+if False:
     anim.save('img/barrier90.gif', writer='imagemagick',
-              fps=5, dpi=100, extra_args=['-layers Optimize'],
+              fps=10, dpi=100, extra_args=['-layers Optimize'],
               progress_callback=lambda i, n: print(f'Saving frame {i+1} of {n}'))
 
     sys.exit(0)
