@@ -1,87 +1,47 @@
 import numpy as np
 import WaveFunction as wf
 
-p_ = wf.p_
-k_ = wf.kappa_
-a = wf.a
+p0 = np.sqrt(2. * wf.m_e * wf.E_e) / wf.hbar
+k0 = np.sqrt(2. * wf.m_e * (wf.V_b - wf.E_e)) / wf.hbar
 
 # Coefficients of stationary solution (scattering on a barrier) for all three regions
 A = 1.0
-F = A / ((np.cosh(2 * k_ * a) + (1j / 2) * (k_ / p_ - p_ / k_) * np.sinh(2 * k_ * a)) * np.exp(2j * p_ * a))
-B = F * (-1j / 2) * (k_ / p_ + p_ / k_) * np.sinh(2 * k_ * a)
-C = (F / 2) * (1 - (1j * p_ / k_)) * np.exp((k_ + 1j * p_) * a)
-D = (F / 2) * (1 + (1j * p_ / k_)) * np.exp((-k_ + 1j * p_) * a)
+F = A / ((np.cosh(2 * k0 * wf.a_b) + (1j / 2) * (k0 / p0 - p0 / k0) * np.sinh(2 * k0 * wf.a_b)) * np.exp(2j * p0 * wf.a_b))
+B = F * (-1j / 2) * (k0 / p0 + p0 / k0) * np.sinh(2 * k0 * wf.a_b)
+C = (F / 2) * (1 - (1j * p0 / k0)) * np.exp((k0 + 1j * p0) * wf.a_b)
+D = (F / 2) * (1 + (1j * p0 / k0)) * np.exp((-k0 + 1j * p0) * wf.a_b)
+
+# Computation of GAUSS-HERMITE abscissas and weights with orthonormal set of polynomials.
+x_H, w = np.polynomial.hermite.hermgauss(300)
 
 
 def psi_x(x, t, p=0):
     """Stationary solution (scattering by a rectangle-barrier) superpositioned with psi_t."""
     psi_xt = np.zeros(x.size, complex)
-    p_0 = 2 * wf.sigma_p * p + p_
-    k_0 = 2 * wf.sigma_p * p + k_
-    t = t - wf.t_col(p_0)
+    p_0 = 2 * wf.sigma_p * p + wf.p_
+    if p_0 ** 2 <= 2. * wf.m_e * wf.V_b:
+        k_0 = np.sqrt(2. * wf.m_e * wf.V_b - p_0 ** 2)
+    else:
+        k_0 = 0.
+    t = t - 2. * wf.t_col(p_0)
 
     for i in range(x.size):
-        if x[i] < -wf.a:
-            psi_xt[i] = (A * np.exp(1j * p_0 * x[i]) +
-                         B * np.exp(-1j * p_0 * x[i]))
-        elif -wf.a <= x[i] <= wf.a:
-            psi_xt[i] = (C * np.exp(-k_0 * x[i]) +
-                         D * np.exp(k_0 * x[i]))
-        elif x[i] > wf.a:
-            psi_xt[i] = F * np.exp(1j * p_0 * x[i])
-    return psi_xt * wf.psi_t(t, p_0)
+        if x[i] < -wf.a_b:
+            psi_xt[i] = (A * np.exp(1j * p_0 / wf.hbar * x[i]) +
+                         B * np.exp(-1j * p_0 / wf.hbar * x[i]))
+        elif -wf.a_b <= x[i] <= wf.a_b:
+            psi_xt[i] = (C * np.exp(-k_0 / wf.hbar * x[i]) +
+                         D * np.exp(k_0 / wf.hbar * x[i]))
+        elif x[i] > wf.a_b:
+            psi_xt[i] = F * np.exp(1j * p_0 / wf.hbar * x[i])
+    return wf.psi0_norm * psi_xt * wf.psi_t(t, p_0)
 
 
-def gauss_hermite():
-    """Computation of GAUSS-HERMITE abscissas and weights with orthonormal set of polynomials."""
-    n = 100
-    EPS = 1.0e-14
-    x, w = np.zeros(n), np.zeros(n)
-    m = int((n + 1) / 2)
-    z = pp = 1.0
-
-    for i in range(0, m, 1):
-        if i == 0:
-            z = np.sqrt((2 * n + 1) - 1.85575 * (2 * n + 1) ** -0.16667)
-        elif i == 1:
-            z -= 1.14 * (n ** 0.426) / z
-        elif i == 2:
-            z = 1.86 * z - 0.86 * x[0]
-        elif i == 3:
-            z = 1.91 * z - 0.91 * x[1]
-        else:
-            z = 2.0 * z - x[i - 2]
-
-        for its in range(0, n, 1):
-            p1 = 1 / np.pi ** 0.25
-            p2 = 0.0
-
-            for j in range(0, n, 1):
-                p3 = p2
-                p2 = p1
-                p1 = z * np.sqrt(2.0 / (j + 1)) * p2 - np.sqrt(j / (j + 1)) * p3
-
-            pp = np.sqrt(2 * n) * p2
-            z1 = z
-            z = z1 - p1 / pp
-
-            if np.abs(z - z1) <= EPS:
-                break
-
-        x[i] = z
-        x[n - 1 - i] = -z
-        w[i] = 2.0 / pp ** 2
-        w[n - 1 - i] = w[i]
-    return x, w
-
-
-def psi(x, t, phi_x):
+def psi(x, t, phi):
     """Approximation of wavepacket by GAUSSIAN quadrature procedure"""
-    x_N, w = gauss_hermite()
     F = 0.0
-
-    for j in range(0, len(x_N), 1):
-        F += w[j] * phi_x(x, t, x_N[j])
+    for j in range(0, len(x_H), 1):
+        F += w[j] * phi(x, t, x_H[j])
     return F
 
 
@@ -92,3 +52,12 @@ def info(psi):
           f'Transmission probability: {round(np.abs(F / A) ** 2, 4)}')
     print('\nGAUSS-QUAD')
     wf.prob_info(psi)
+
+
+def x_t(t):
+    x_pos = wf.x_0 + (wf.p_ / wf.m_e) * t
+    if x_pos >= -wf.a_b:
+        t_col = (-wf.a_b - wf.x_0) / (wf.p_ / wf.m_e)
+        return -wf.a_b - (wf.p_ / wf.m_e) * (t - t_col)
+    else:
+        return x_pos
