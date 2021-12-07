@@ -21,6 +21,9 @@ ax.set_ylabel(r'Probability density $|\psi(x,t)|^2/$m$^{-1}$')
 an = wfa.psi(x, 0, wfa.psi_x)
 psi_an, = ax.plot(x, np.abs(an) ** 2, label='Gauss-Hermite')
 norm_an = wf.norm(an)
+# an = wfa.psi(x, 0, wfa.psi_alpha)
+# psi_an, = ax.plot(x, np.abs(an) ** 2, label='Gauss-Hermite')
+# norm_an = wf.norm(an)
 
 rk = wfn.PsiRK().solve()
 psi_rk, = ax.plot(x, np.abs(rk.y[:, 0]) ** 2, label='Runge-Kutta')
@@ -43,6 +46,8 @@ def init():
 def update(i):
     psi2_an = np.abs(wfa.psi(x, t[i], wfa.psi_x)) ** 2 / norm_an
     psi_an.set_ydata(psi2_an)
+    # psi2_an = np.abs(wfa.psi(x, t[i], wfa.psi_alpha)) ** 2 / norm_an
+    # psi_an.set_ydata(psi2_an)
 
     psi2_rk = np.abs(rk.y[:, i]) ** 2 / norm_rk
     psi_rk.set_ydata(psi2_rk)

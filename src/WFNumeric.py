@@ -11,7 +11,7 @@ V = wf.V(x)
 # Discretization of time coords from zero to collision time
 t_0 = 0.0
 t_n = 2. * wf.t_col()
-dt = t_n / 200
+dt = t_n / 100
 t_N = np.arange(t_0, t_n, dt)
 
 

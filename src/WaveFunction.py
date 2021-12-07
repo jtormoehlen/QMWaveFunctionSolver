@@ -8,8 +8,8 @@ import scipy.constants as const
 E_0 = 0.9
 
 m_e = const.m_e
-V_b = 0.25 * const.eV
-a_b = 5. * const.angstrom
+V_b = 0.5 * const.eV
+a_b = 10. * const.angstrom
 E_e = E_0 * V_b
 hbar = const.hbar
 
@@ -18,8 +18,9 @@ kb_a = np.sqrt(2. * m_e * V_b) * a_b / hbar
 
 p_ = np.sqrt(2. * m_e * E_e)
 
-sigma_E = E_e / 100.
-sigma_p = np.sqrt(2. * m_e * sigma_E)
+# sigma_E = E_e / 100.
+# sigma_p = np.sqrt(2. * m_e * sigma_E)
+sigma_p = p_ / 20
 sigma_x = hbar / sigma_p
 x_0 = -a_b - 5. * sigma_x
 
