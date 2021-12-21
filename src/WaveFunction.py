@@ -20,7 +20,7 @@ x_0 = -1 - 5 * sigma_x
 
 # Discretization of spatial coords from -2*x_0 to 2*x_0
 x_max = -2. * x_0
-n_x = 2000
+n_x = 1000
 x, dx = np.linspace(-x_max, x_max, n_x, retstep=True)
 
 

@@ -23,8 +23,8 @@ psi_rk, = ax.plot(x, np.abs(rk.psi(0)) ** 2, label='Runge-Kutta')
 norm_rk = wf.norm(rk.psi(0))
 
 cn = wn.CNSolver()
-psi_cn, = ax.plot(x, np.abs(cn.psi) ** 2, label='Crank-Nicolson')
-norm_cn = wf.norm(cn.psi)
+psi_cn, = ax.plot(x, np.abs(cn.psi(0)) ** 2, label='Crank-Nicolson')
+norm_cn = wf.norm(cn.psi(0))
 
 prob_text = ax.text(wf.x_0, 0.12, '', fontsize=12)
 particle, = ax.plot(wf.x_0, 0., 'ok')
@@ -48,7 +48,7 @@ def update(i):
     psi2_rk = np.abs(rk.psi(i)) ** 2 / norm_rk
     psi_rk.set_ydata(psi2_rk)
 
-    psi2_cn = np.abs(cn.evolve(i)) ** 2 / norm_cn
+    psi2_cn = np.abs(cn.psi(i)) ** 2 / norm_cn
     psi_cn.set_ydata(psi2_cn)
 
     prob_text.set_text(r'$P_{GH}=$' + f'{round(wf.prob(psi2_an), 4)}\n'
@@ -68,7 +68,7 @@ wf.param_info()
 wa.prob_info(wa.psi(x, t[-1]))
 rk.prob_info()
 cn.prob_info()
-if True:
+if False:
     anim.save('img/barrier.gif', writer='imagemagick',
               fps=10, dpi=100, extra_args=['-layers Optimize'],
               progress_callback=lambda i, n: print(f'Saving frame {i+1} of {n}'))

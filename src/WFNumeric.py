@@ -13,7 +13,7 @@ psi_0 = wf.psi_0(x)
 # Discretization of time variable from zero to collision time
 t_0 = 0.0
 t_N = wf.t_col()
-dt = t_N / 200
+dt = t_N / 100
 t_n = np.arange(t_0, t_N, dt)
 
 
@@ -36,8 +36,8 @@ class RKSolver:
         H = hamilton()
         return -1j * H.dot(psi)
 
-    def psi(self, index):
-        return self.sol.y[:, index]
+    def psi(self, t):
+        return self.sol.y[:, t]
 
     def prob_info(self):
         """Scattering probabilities for the console."""
@@ -50,31 +50,22 @@ class CNSolver:
     H = hamilton()
     imp = (sp.sparse.eye(x.size) - dt / 2j * H).tocsc()
     exp = (sp.sparse.eye(x.size) + dt / 2j * H).tocsc()
-    evolution_matrix = ln.inv(imp).dot(exp).tocsr()
+    evol_mat = ln.inv(imp).dot(exp).tocsr()
 
     def __init__(self):
-        """Initiate free wavepacket psi0."""
-        self.psi = psi_0
+        """Initiate free wave packet psi0."""
+        self.sol = [psi_0]
+        for t in range(t_n.size):
+            self.sol.append(self.evolve())
 
-    def evolve(self, t):
+    def evolve(self):
         """Solve schrodinger-equation by applying CN-matrix."""
-        if 0 < t < t_n.size:
-            self.psi = self.evolution_matrix.dot(self.psi)
-        else:
-            self.psi = psi_0
-        return self.psi
+        return self.evol_mat.dot(self.sol[-1])
 
-    def custom_evolve(self, t_end):
-        """CN-matrix with custom time step Delta t applied to psi0."""
-        psi0 = psi_0
-        delta_t = 0.0
-        while delta_t <= t_end:
-            psi0 = self.evolution_matrix.dot(psi0)
-            delta_t += dt
-        return psi0
+    def psi(self, t):
+        return self.sol[t]
 
     def prob_info(self):
         """Scattering probabilities for the console."""
-        psi = self.custom_evolve(t_N)
         print('\nCRANK-NICOLSON')
-        wf.prob_info(psi)
+        wf.prob_info(self.psi(-1))

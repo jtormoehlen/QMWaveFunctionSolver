@@ -27,7 +27,7 @@ xi = 2. * k_ * wf.sigma_x ** 2 - 1j * (wf.x_0 + 1.)
 F_0 = np.sqrt(2.) * (2. * np.pi * wf.sigma_x ** 2) ** 0.25 * np.exp(-wf.sigma_x ** 2 * k_ ** 2)
 
 
-def psi_x(x, t, p=0):
+def phi_alpha(x, t, p=0):
     """Stationary solution (scattering by a rectangle-barrier) superpositioned with psi_t."""
     psi_xt = np.zeros(x.size, complex)
     p_0 = 2 * wf.sigma_p * p + p0
@@ -49,9 +49,9 @@ def psi_x(x, t, p=0):
     return psi_xt * wf.psi_t(t, p_0)
 
 
-def psi(x, t, phi=psi_x):
+def psi(x, t, phi=phi_alpha):
     """Approximation of wavepacket by GAUSSIAN quadrature procedure."""
-    psi = 0.0
+    psi = 0
     for j in range(0, len(x_H), 1):
         psi += w[j] * phi(x, t, x_H[j])
     return psi
