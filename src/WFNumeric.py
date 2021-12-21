@@ -10,10 +10,10 @@ V = wf.V(x)
 m = wf.m
 psi_0 = wf.psi_0(x)
 
-# Discretization of time coords from zero to collision time
+# Discretization of time variable from zero to collision time
 t_0 = 0.0
 t_N = wf.t_col()
-dt = t_N / 100
+dt = t_N / 200
 t_n = np.arange(t_0, t_N, dt)
 
 
@@ -24,26 +24,28 @@ def hamilton():
     return sp.sparse.diags([d1, d0, d1], [-1, 0, 1])
 
 
-class PsiRK:
-    def solve(self):
-        """Solve schrodinger-equation by RUNGE-KUTTA procedure for initial free wavepacket."""
-        return integrate.solve_ivp(self.eq, y0=psi_0,
-                                   t_span=[t_0, t_N], t_eval=t_n, method='RK23')
+class RKSolver:
+    """Solve schrodinger-equation by RUNGE-KUTTA procedure for initial free wave packet."""
+    def __init__(self):
+        self.sol = integrate.solve_ivp(self.dt_psi, y0=psi_0,
+                                       t_span=[t_0, t_N], t_eval=t_n, method='RK23')
 
     @staticmethod
-    def eq(t, psi):
+    def dt_psi(t, psi):
         """Right-hand side of schrodinger-equation."""
         H = hamilton()
         return -1j * H.dot(psi)
 
-    @staticmethod
-    def info(psi):
+    def psi(self, index):
+        return self.sol.y[:, index]
+
+    def prob_info(self):
         """Scattering probabilities for the console."""
         print('\nRUNGE-KUTTA')
-        wf.prob_info(psi)
+        wf.prob_info(self.psi(-1))
 
 
-class PsiCN:
+class CNSolver:
     """Discretization of position and time coords by CRANK-NICOLSON procedure."""
     H = hamilton()
     imp = (sp.sparse.eye(x.size) - dt / 2j * H).tocsc()
@@ -53,8 +55,6 @@ class PsiCN:
     def __init__(self):
         """Initiate free wavepacket psi0."""
         self.psi = psi_0
-        # <= 0.5 (!)
-        # print(dt / dx ** 2)
 
     def evolve(self, t):
         """Solve schrodinger-equation by applying CN-matrix."""
@@ -73,7 +73,7 @@ class PsiCN:
             delta_t += dt
         return psi0
 
-    def info(self):
+    def prob_info(self):
         """Scattering probabilities for the console."""
         psi = self.custom_evolve(t_N)
         print('\nCRANK-NICOLSON')
