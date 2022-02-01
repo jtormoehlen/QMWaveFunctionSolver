@@ -26,7 +26,7 @@ class Psi:
         self.x_0 = -1 - 5 * self.sigma_x
 
         self.x_max = -2 * self.x_0
-        self.n_x = 4000
+        self.n_x = 1000
         self.x, self.dx = np.linspace(-self.x_max, self.x_max, self.n_x, retstep=True)
 
         self.t_0 = 0.
@@ -99,8 +99,8 @@ class Psi:
 
 fig = plt.figure(figsize=(6, 4))
 ax = plt.subplot(1, 1, 1)
-E_num = np.linspace(0.01, 0.91, 50)
-E_ana = np.linspace(0.01, 0.91, 100)
+E_num = np.linspace(0.01, 8.01, 50)
+E_ana = np.linspace(0.01, 8.01, 100)
 R_cn = np.zeros(E_num.size)
 R_rk = np.zeros(E_num.size)
 R_ana = np.zeros(E_ana.size)

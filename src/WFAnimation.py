@@ -8,7 +8,6 @@ import WFNumeric as wn
 import WFAnalytic as wa
 
 x = wf.x
-dx = wf.dx
 t = wn.t_n
 
 fig = plt.figure(figsize=(6, 4))
