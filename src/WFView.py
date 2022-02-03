@@ -26,7 +26,7 @@ class Psi:
         self.x_0 = -1 - 5 * self.sigma_x
 
         self.x_max = -2 * self.x_0
-        self.n_x = 1000
+        self.n_x = 2000
         self.x, self.dx = np.linspace(-self.x_max, self.x_max, self.n_x, retstep=True)
 
         self.t_0 = 0.
@@ -52,7 +52,7 @@ class Psi:
                                  t_span=[self.t_0, self.t_n], t_eval=self.t_N, method='RK23')
         psi = np.abs(rk.y[:, self.t_N.size - 1]) ** 2
         psi_norm = self.norm(rk.y[:, 0])
-        return self.prob(psi / psi_norm, -self.x_max, -1.)
+        return self.prob(psi / psi_norm, 1., self.x_max)
 
     def prob(self, psi2, x_start, x_end):
         P = 0.0
@@ -99,8 +99,8 @@ class Psi:
 
 fig = plt.figure(figsize=(6, 4))
 ax = plt.subplot(1, 1, 1)
-E_num = np.linspace(0.01, 8.01, 50)
-E_ana = np.linspace(0.01, 8.01, 100)
+E_num = np.linspace(0.01, 0.99, 50)
+E_ana = np.linspace(0.01, 0.99, 100)
 R_cn = np.zeros(E_num.size)
 R_rk = np.zeros(E_num.size)
 R_ana = np.zeros(E_ana.size)
@@ -112,7 +112,7 @@ for index, value in enumerate(E_ana):
 for index, value in enumerate(E_num):
     psi = Psi(value)
     R_cn[index] = psi.cn()
-    # R_rk[index] = psi.rk()
+    R_rk[index] = psi.rk()
 
 ax.set_xlabel(r'Energy ratio $E_0/V_0$')
 # ax.set_ylabel(r'Reflection probability $R$')
@@ -120,7 +120,7 @@ ax.set_xlabel(r'Energy ratio $E_0/V_0$')
 ax.set_ylabel(r'Transmission probability $T$')
 ax.plot(E_ana, R_ana, label='analytical')
 ax.plot(E_num, R_cn, 'p', label='Crank-Nicolson')
-# ax.plot(E_num, R_rk, '*', label='Runge-Kutta')
+ax.plot(E_num, R_rk, '*', label='Runge-Kutta')
 # ax.set_ylim(0., 1.)
 plt.grid()
 plt.legend()

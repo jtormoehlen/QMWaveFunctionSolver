@@ -67,7 +67,7 @@ wf.param_info()
 wa.prob_info(wa.psi(x, t[-1]))
 rk.prob_info()
 cn.prob_info()
-if False:
+if True:
     anim.save('img/barrier.gif', writer='imagemagick',
               fps=10, dpi=100, extra_args=['-layers Optimize'],
               progress_callback=lambda i, n: print(f'Saving frame {i+1} of {n}'))

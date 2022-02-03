@@ -13,7 +13,7 @@ psi_0 = wf.psi_0(x)
 # Discretization of time variable from zero to collision time
 t_0 = 0.0
 t_N = wf.t_col()
-dt = t_N / 100
+dt = t_N / 200
 t_n = np.arange(t_0, t_N, dt)
 
 
