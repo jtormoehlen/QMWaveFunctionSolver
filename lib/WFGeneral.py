@@ -1,24 +1,21 @@
 import numpy as np
 import scipy.constants as const
 
-# Barrier width a_b, barrier height V_b, electron mass m_e and planck's constant hbar
-a_b = 5. * const.angstrom
-V_b = 0.25 * const.eV
-m_e = const.m_e
-hbar = const.hbar
+a_b = 5. * const.angstrom  # barrier width
+V_b = 0.25 * const.eV  # barrier height V_b
+m_e = const.m_e  # electron mass
+hbar = const.hbar  # planck's reduced constant
 
-# barrier strength and dimensionless mass number
-kb_a = np.sqrt(2. * m_e * V_b) * a_b / hbar
-m = kb_a ** 2
+kb_a = np.sqrt(2. * m_e * V_b) * a_b / hbar  # barrier strength
+m = kb_a ** 2  # dimensionless mass
 
-# Initial values: energy E -> E_0/V_0, momentum p_0, sigma_p -> 10% of p_0
-E = 0.9
-p_0 = np.sqrt(m * E)
-sigma_p = p_0 / 10
-sigma_x = 1. / sigma_p
-x_0 = -1 - 5 * sigma_x
+E = 0.9  # E_0/V_0
+p_0 = np.sqrt(m * E)  # momentum
+sigma_p = p_0 / 10  # momentum width
+sigma_x = 1. / sigma_p  # position width
+x_0 = -1 - 5 * sigma_x  # initial position
 
-# Discretization of spatial coords from -2*x_0 to 2*x_0
+# discrete spatial coords (-2*x_0,-2*x_0+dx,...,2*x_0)
 x_max = -2. * x_0
 n_x = 1000
 x, dx = np.linspace(-x_max, x_max, n_x, retstep=True)
@@ -26,8 +23,8 @@ x, dx = np.linspace(-x_max, x_max, n_x, retstep=True)
 
 def psi_0(x):
     """
-    Initial wave function psi of free particle with average momentum p_0.
-    :param x: particle centered at x_0
+    Initial wave packet psi(x,0) with average momentum p_0.
+    :param x: spatial coords
     :return: initial wave packet
     """
     psi = np.zeros(x.size, complex)
@@ -38,8 +35,8 @@ def psi_0(x):
 
 def psi_t(t, p):
     """
-    Time dependent solution of schrodinger equation psi_t.
-    :param t: time variable
+    Time dependent solution of schrodinger equation psi(t).
+    :param t: time coord
     :param p: momentum
     :return: time dependent solution
     """
@@ -49,7 +46,7 @@ def psi_t(t, p):
 def V(x):
     """
     Time independent potential V(x).
-    :param x: position variable
+    :param x: spatial coord
     :return: potential
     """
     return np.heaviside(1. - np.abs(x), 1.)
@@ -57,7 +54,7 @@ def V(x):
 
 def t_col(p=p_0):
     """
-    Collision time t_col from particle with initial position x_0.
+    Collision time t_col with barrier for classical particle.
     :param p: momentum
     :return: collision time
     """
@@ -90,7 +87,7 @@ def prob(psi2, x_start=-x_max, x_end=x_max):
 
 def param_info():
     """
-    Some information about initial parameters for the console.
+    Information about initial parameters for the console.
     """
     print('Parameters######################\n'
           f'Barrier strength: {round(kb_a, 2)}\n'
@@ -101,7 +98,7 @@ def param_info():
 
 def prob_info(psi):
     """
-    Prototype for logging scattering probabilities.
+    Scattering probabilities.
     :param psi: wave function
     """
     psi2_norm = norm(psi)
