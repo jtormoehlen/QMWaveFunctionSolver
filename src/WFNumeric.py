@@ -2,7 +2,7 @@ import numpy as np
 import scipy as sp
 from scipy import integrate
 from scipy.sparse import linalg as ln
-import WaveFunction as wf
+import WFUtil as wf
 
 x = wf.x
 dx = wf.dx

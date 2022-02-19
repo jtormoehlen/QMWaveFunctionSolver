@@ -1,5 +1,5 @@
 import numpy as np
-import WaveFunction as wf
+import WFUtil as wf
 
 E = wf.E
 m = wf.m

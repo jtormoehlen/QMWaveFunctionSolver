@@ -1,111 +1,76 @@
+import sys
 import numpy as np
-import scipy.constants as const
-
-# Barrier width a_b, barrier height V_b, electron mass m_e and planck's constant hbar
-a_b = 5. * const.angstrom
-V_b = 0.25 * const.eV
-m_e = const.m_e
-hbar = const.hbar
-
-# barrier strength and dimensionless mass number
-kb_a = np.sqrt(2. * m_e * V_b) * a_b / hbar
-m = kb_a ** 2
-
-# Initial values: energy E -> E_0/V_0, momentum p_0, sigma_p -> 10% of p_0
-E = 0.9
-p_0 = np.sqrt(m * E)
-sigma_p = p_0 / 10
-sigma_x = 1. / sigma_p
-x_0 = -1 - 5 * sigma_x
-
-# Discretization of spatial coords from -2*x_0 to 2*x_0
-x_max = -2. * x_0
-n_x = 1000
-x, dx = np.linspace(-x_max, x_max, n_x, retstep=True)
+from matplotlib import pyplot as plt
+from matplotlib.animation import FuncAnimation, PillowWriter
+import WFUtil as wf
+import WFNumeric as wn
+import WFAnalytic as wa
 
 
-def psi_0(x):
-    """
-    Initial wave function psi of free particle with average momentum p_0.
-    :param x: particle centered at x_0
-    :return: initial wave packet
-    """
-    psi = np.zeros(x.size, complex)
-    for i in range(x.size):
-        psi[i] = np.exp(-(x[i] - x_0) ** 2 / (sigma_x ** 2)) * np.exp(1j * p_0 * x[i])
-    return psi
+def main():
+    x = wf.x
+    t = wn.t_n
+
+    fig = plt.figure(figsize=(6, 4))
+    ax = plt.subplot(1, 1, 1)
+
+    an = wa.psi(x, 0)
+    psi_an, = ax.plot(x, np.abs(an) ** 2, label='Gauss-Hermite')
+    norm_an = wf.norm(an)
+
+    rk = wn.RKSolver()
+    psi_rk, = ax.plot(x, np.abs(rk.psi(0)) ** 2, label='Runge-Kutta')
+    norm_rk = wf.norm(rk.psi(0))
+
+    cn = wn.CNSolver()
+    psi_cn, = ax.plot(x, np.abs(cn.psi(0)) ** 2, label='Crank-Nicolson')
+    norm_cn = wf.norm(cn.psi(0))
+
+    prob_text = ax.text(wf.x_0, 0.12, '', fontsize=12)
+    particle, = ax.plot(wf.x_0, 0., 'ok')
+
+    ax.set_xlim(min(x), max(x))
+    ax.set_ylim(-0.1 * max(np.abs(an) ** 2 / norm_an),
+                max(np.abs(an) ** 2 / norm_an) + 0.1 * max(np.abs(an) ** 2 / norm_an))
+    ax.set_xlabel(r'Position $x/$a')
+    ax.set_ylabel(r'Probability density $|\psi(x,t)|^2/$a$^{-1}$')
+
+    def init():
+        ax.plot(x, wf.V(x), '--k')
+        return psi_an, psi_rk, psi_cn, particle
+
+    def update(i):
+        psi2_an = np.abs(wa.psi(x, t[i])) ** 2 / norm_an
+        psi_an.set_ydata(psi2_an)
+
+        psi2_rk = np.abs(rk.psi(i)) ** 2 / norm_rk
+        psi_rk.set_ydata(psi2_rk)
+
+        psi2_cn = np.abs(cn.psi(i)) ** 2 / norm_cn
+        psi_cn.set_ydata(psi2_cn)
+
+        prob_text.set_text(r'$P_{GH}=$' + f'{round(wf.prob(psi2_an), 4)}\n'
+                                          r'$P_{RK}=$' + f'{round(wf.prob(psi2_rk), 4)}\n'
+                                                         r'$P_{CN}=$' + f'{round(wf.prob(psi2_cn), 4)}')
+
+        particle.set_xdata(wa.x_t(t[i]))
+        return psi_an, psi_rk, psi_cn, particle
+
+    plt.legend()
+    plt.tight_layout()
+    anim = FuncAnimation(fig, update, init_func=init,
+                         frames=len(t), interval=100, blit=True)
+
+    wf.param_info()
+    wa.prob_info(wa.psi(x, t[-1]))
+    rk.prob_info()
+    cn.prob_info()
+
+    anim.save('./wave_packet.gif', writer=PillowWriter(fps=10),
+              progress_callback=lambda i, n: print(f'Saving frame {i + 1} of {n}'))
+    sys.exit(0)
+    # plt.show()
 
 
-def psi_t(t, p):
-    """
-    Time dependent solution of schrodinger equation psi_t.
-    :param t: time variable
-    :param p: momentum
-    :return: time dependent solution
-    """
-    return np.exp(-1j * (p ** 2 / m) * t)
-
-
-def V(x):
-    """
-    Time independent potential V(x).
-    :param x: position variable
-    :return: potential
-    """
-    return np.heaviside(1. - np.abs(x), 1.)
-
-
-def t_col(p=p_0):
-    """
-    Collision time t_col from particle with initial position x_0.
-    :param p: momentum
-    :return: collision time
-    """
-    return -x_0 / (p / m)
-
-
-def norm(psi):
-    """
-    Norm of wave function |psi|^2.
-    :param psi: wave function
-    :return: norm
-    """
-    return np.sum(np.abs(psi) ** 2 * dx)
-
-
-def prob(psi2, x_start=-x_max, x_end=x_max):
-    """
-    Probability of finding the particle in selected interval based on formula: sum{|psi|^2*dx}.
-    :param psi2: normalized probability density
-    :param x_start: lower position boundary
-    :param x_end: upper position boundary
-    :return: probability sum{|psi|^2*dx} from a to b
-    """
-    P = 0.0
-    for index, value in enumerate(x):
-        if x_start <= value <= x_end:
-            P += psi2[index] * dx
-    return P
-
-
-def param_info():
-    """
-    Some information about initial parameters for the console.
-    """
-    print('Parameters######################\n'
-          f'Barrier strength: {round(kb_a, 2)}\n'
-          f'E/V-ratio: {round(E, 2)}\n'
-          f'Initial position: {round(x_0, 2)}\n'
-          '################################')
-
-
-def prob_info(psi):
-    """
-    Prototype for logging scattering probabilities.
-    :param psi: wave function
-    """
-    psi2_norm = norm(psi)
-    refl = prob(np.abs(psi) ** 2 / psi2_norm, -x_max, -1.)
-    trans = prob(np.abs(psi) ** 2 / psi2_norm, 1., x_max)
-    print(f'Reflection probability: {round(refl, 4)}\n'
-          f'Transmission probability: {round(trans, 4)}')
+if __name__ == "__main__":
+    main()
