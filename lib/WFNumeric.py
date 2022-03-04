@@ -4,7 +4,7 @@ from scipy import integrate
 from scipy.sparse import linalg as ln
 from lib import WFGeneral as wg
 
-x = wg.x
+x = wg.x_j
 dx = wg.dx
 V = wg.V(x)
 m = wg.m
@@ -13,7 +13,7 @@ psi_0 = wg.psi_0(x)
 # discrete time coords (t_0,t_0+dt,...,t_col)
 t_0 = 0.0
 t_N = wg.t_col()
-dt = t_N / 200
+dt = t_N / 100
 t_n = np.arange(t_0, t_N, dt)
 
 

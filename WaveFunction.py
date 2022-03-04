@@ -1,17 +1,18 @@
 import sys
 import numpy as np
-from matplotlib import pyplot as plt
+import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation, PillowWriter
 from lib import WFNumeric as wn, WFAnalytic as wa, WFGeneral as wg
 
 plt.style.use('./lib/figstyle.mpstyle')
+FPS = 10
 
 
-def main():
+def main(save=False):
     fig = plt.figure()
-    ax = plt.subplot(1, 1, 1)
+    ax = plt.subplot()
 
-    x = wg.x  # spatial coords
+    x = wg.x_j  # spatial coords
     t = wn.t_n  # time coords
 
     """
@@ -19,9 +20,9 @@ def main():
     2.) plot |psi(x,0)|^2 as [Line2D,...]
     3.) compute norm |psi(x,0)|^2
     """
-    an = wa.psi(x, 0)
-    psi_an, = ax.plot(x, np.abs(an) ** 2, label='Gauss-Hermite')
-    norm_an = wg.norm(an)
+    gh = wa.psi(x, 0)
+    psi_gh, = ax.plot(x, np.abs(gh) ** 2, label='Gauss-Hermite')
+    norm_gh = wg.norm(gh)
     rk = wn.RKSolver()
     psi_rk, = ax.plot(x, np.abs(rk.psi(0)) ** 2, label='Runge-Kutta')
     norm_rk = wg.norm(rk.psi(0))
@@ -33,8 +34,8 @@ def main():
     particle, = ax.plot(wg.x_0, 0., 'ok')  # classical particle position x(0)
 
     ax.set_xlim(min(x), max(x))
-    ax.set_ylim(-0.1 * max(np.abs(an) ** 2 / norm_an),
-                max(np.abs(an) ** 2 / norm_an) + 0.1 * max(np.abs(an) ** 2 / norm_an))
+    ax.set_ylim(-0.1 * max(np.abs(gh) ** 2 / norm_gh),
+                max(np.abs(gh) ** 2 / norm_gh) + 0.1 * max(np.abs(gh) ** 2 / norm_gh))
     ax.set_xlabel('Position $x/$a')
     ax.set_ylabel('Probability density $|\psi(x,t)|^2/$a$^{-1}$')
 
@@ -44,7 +45,7 @@ def main():
         :return: wave packets as [[Line2D,...],[Line2D,...],...]
         """
         ax.plot(x, wg.V(x), '--k')
-        return psi_an, psi_rk, psi_cn, particle
+        return psi_gh, psi_rk, psi_cn, particle
 
     def update(i):
         """
@@ -53,19 +54,19 @@ def main():
         :param i: time (frame) in (t_0,t_1,...,t_N)
         :return: wave packets as [[Line2D,...],[Line2D,...],...]
         """
-        psi2_an = np.abs(wa.psi(x, t[i])) ** 2 / norm_an
-        psi_an.set_ydata(psi2_an)
+        psi2_gh = np.abs(wa.psi(x, t[i])) ** 2 / norm_gh
+        psi_gh.set_ydata(psi2_gh)
         psi2_rk = np.abs(rk.psi(i)) ** 2 / norm_rk
         psi_rk.set_ydata(psi2_rk)
         psi2_cn = np.abs(cn.psi(i)) ** 2 / norm_cn
         psi_cn.set_ydata(psi2_cn)
 
-        # prob_text.set_text(r'$P_{GH}=$' + f'{round(wu.prob(psi2_an), 4)}\n'
+        # prob_text.set_text(r'$P_{GH}=$' + f'{round(wu.prob(psi2_gh), 4)}\n'
         #                    r'$P_{RK}=$' + f'{round(wu.prob(psi2_rk), 4)}\n'
         #                    r'$P_{CN}=$' + f'{round(wu.prob(psi2_cn), 4)}')
 
         particle.set_xdata(wa.x_t(t[i]))
-        return psi_an, psi_rk, psi_cn, particle
+        return psi_gh, psi_rk, psi_cn, particle
 
     plt.legend()
     anim = FuncAnimation(fig, update, init_func=init,
@@ -75,12 +76,13 @@ def main():
     wa.prob_info(wa.psi(x, t[-1]))
     rk.prob_info()
     cn.prob_info()
-
-    # anim.save('./wave_packet.gif', writer=PillowWriter(fps=10),
-    #           progress_callback=lambda i, n: print(f'Saving frame {i + 1} of {n}'))
-    # sys.exit(0)
-    plt.show()
+    if save:
+        anim.save('./wave_packet.gif', writer=PillowWriter(fps=FPS),
+                  progress_callback=lambda i, n: print(f'Saving frame {i + 1} of {n}'))
+        sys.exit(0)
+    else:
+        plt.show()
 
 
 if __name__ == "__main__":
-    main()
+    main(save=True)

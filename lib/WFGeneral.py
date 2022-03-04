@@ -18,7 +18,7 @@ x_0 = -1 - 5 * sigma_x  # initial position
 # discrete spatial coords (-2*x_0,-2*x_0+dx,...,2*x_0)
 x_max = -2. * x_0
 n_x = 1000
-x, dx = np.linspace(-x_max, x_max, n_x, retstep=True)
+x_j, dx = np.linspace(-x_max, x_max, n_x, retstep=True)
 
 
 def psi_0(x):
@@ -79,7 +79,7 @@ def prob(psi2, x_start=-x_max, x_end=x_max):
     :return: probability sum{|psi|^2*dx} from a to b
     """
     P = 0.0
-    for index, value in enumerate(x):
+    for index, value in enumerate(x_j):
         if x_start <= value <= x_end:
             P += psi2[index] * dx
     return P
