@@ -28,12 +28,12 @@ k_ = np.sqrt(E) * k_b
 def phi_alpha(x, t, p=0):
     """Stationary solution (scattering by a rectangle-barrier) superposed with psi_t."""
     psi_xt = np.zeros(x.size, complex)
-    p_0 = 2 * wg.sigma_p * p + p0
+    p_0 = 2 * wg.sigma_p * p + p0  # momentum substitution for GH-proc
     if p_0 ** 2 <= m:
         k_0 = np.sqrt(m - p_0 ** 2)
     else:
         k_0 = 1j * np.sqrt(p_0 ** 2 - m)
-    t = t - wg.t_col(p_0)
+    t = t - wg.t_col(p_0)  # set time t->t-t_col
 
     for i in range(x.size):
         if x[i] < -1.:
@@ -67,11 +67,11 @@ def probs(psi):
 def x_t(t):
     """
     Position of classical particle x(t).
-    :param t: time coord
+    :param t: time
     :return: position
     """
-    x_0 = wg.x_0
-    x_pos = x_0 + (2. * p0 / m) * t
+    x_0 = wg.x_0  # start pos
+    x_pos = x_0 + (2. * p0 / m) * t  # pos at time t
     if x_pos >= -1.:
         t_col = (-1. - x_0) / (2. * p0 / m)
         return -1. - (2. * p0 / m) * (t - t_col)
