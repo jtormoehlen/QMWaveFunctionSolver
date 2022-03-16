@@ -22,16 +22,20 @@ def main(save=False):
     """
     gh = wa.psi(x, 0)
     psi_gh, = ax.plot(x, np.abs(gh) ** 2, label='Gauss-Hermite')
-    norm_gh = wg.norm(gh)
+    norm_gh = wg.prob(np.abs(gh) ** 2)
+
+    wg.params()
+    wa.probs(wa.psi(x, t[-1]))
+
     rk = wn.RKSolver()
     psi_rk, = ax.plot(x, np.abs(rk.psi(0)) ** 2, label='Runge-Kutta')
-    norm_rk = wg.norm(rk.psi(0))
+    norm_rk = wg.prob(np.abs(rk.psi(0)) ** 2)
     cn = wn.CNSolver()
     psi_cn, = ax.plot(x, np.abs(cn.psi(0)) ** 2, label='Crank-Nicolson')
-    norm_cn = wg.norm(cn.psi(0))
+    norm_cn = wg.prob(np.abs(cn.psi(0)) ** 2)
 
     # prob_text = ax.text(wu.x_0, 0.12, '', fontsize=11)
-    particle, = ax.plot(wg.x_0, 0., 'ok')  # classical particle position x(0)
+    p, = ax.plot(wg.x_0, 0., 'ok')  # classical p position x(0)
 
     ax.set_xlim(min(x), max(x))
     ax.set_ylim(-0.1 * max(np.abs(gh) ** 2 / norm_gh),
@@ -39,15 +43,15 @@ def main(save=False):
     ax.set_xlabel('Position $x/$a')
     ax.set_ylabel('Probability density $|\psi(x,t)|^2/$a$^{-1}$')
 
-    def init():
+    def __init():
         """
         plot potential V(x)
         :return: wave packets as [[Line2D,...],[Line2D,...],...]
         """
         ax.plot(x, wg.V(x), '--k')
-        return psi_gh, psi_rk, psi_cn, particle
+        return psi_gh, psi_rk, psi_cn, p
 
-    def update(i):
+    def __update(i):
         """
         1.) compute normalized |psi(x,i)|^2 by GH, RK and CN
         2.) plot |psi(x,i)|^2 as [Line2D,...]
@@ -65,17 +69,13 @@ def main(save=False):
         #                    r'$P_{RK}=$' + f'{round(wu.prob(psi2_rk), 4)}\n'
         #                    r'$P_{CN}=$' + f'{round(wu.prob(psi2_cn), 4)}')
 
-        particle.set_xdata(wa.x_t(t[i]))
-        return psi_gh, psi_rk, psi_cn, particle
+        p.set_xdata(wa.x_t(t[i]))
+        return psi_gh, psi_rk, psi_cn, p
 
     plt.legend()
-    anim = FuncAnimation(fig, update, init_func=init,
+    anim = FuncAnimation(fig, __update, init_func=__init,
                          frames=len(t), interval=100, blit=True)
 
-    wg.param_info()
-    wa.prob_info(wa.psi(x, t[-1]))
-    rk.prob_info()
-    cn.prob_info()
     if save:
         anim.save('./wave_packet.gif', writer=PillowWriter(fps=FPS),
                   progress_callback=lambda i, n: print(f'Saving frame {i + 1} of {n}'))
@@ -85,4 +85,4 @@ def main(save=False):
 
 
 if __name__ == "__main__":
-    main(save=True)
+    main(save=False)

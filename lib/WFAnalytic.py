@@ -55,13 +55,13 @@ def psi(x, t, phi=phi_alpha):
     return psi
 
 
-def prob_info(psi):
+def probs(psi):
     """Scattering probabilities."""
     print('\nAnalytical\n'
           f'Reflection probability: {round(np.abs(B / A) ** 2, 4)}\n'
           f'Transmission probability: {round(np.abs(F / A) ** 2, 4)}')
     print('\nGAUSS-HERMITE')
-    wg.prob_info(psi)
+    wg.probs(psi)
 
 
 def x_t(t):

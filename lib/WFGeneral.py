@@ -61,15 +61,6 @@ def t_col(p=p_0):
     return -x_0 / (p / m)
 
 
-def norm(psi):
-    """
-    Norm of wave function |psi|^2.
-    :param psi: wave function
-    :return: norm
-    """
-    return np.sum(np.abs(psi) ** 2 * dx)
-
-
 def prob(psi2, x_start=-x_max, x_end=x_max):
     """
     Probability of finding the particle in selected interval based on formula: sum{|psi|^2*dx}.
@@ -78,14 +69,14 @@ def prob(psi2, x_start=-x_max, x_end=x_max):
     :param x_end: upper position boundary
     :return: probability sum{|psi|^2*dx} from a to b
     """
-    P = 0.0
+    P = 0.
     for index, value in enumerate(x_j):
         if x_start <= value <= x_end:
             P += psi2[index] * dx
     return P
 
 
-def param_info():
+def params():
     """
     Information about initial parameters for the console.
     """
@@ -96,12 +87,12 @@ def param_info():
           '################################')
 
 
-def prob_info(psi):
+def probs(psi):
     """
     Scattering probabilities.
     :param psi: wave function
     """
-    psi2_norm = norm(psi)
+    psi2_norm = prob(np.abs(psi) ** 2)
     refl = prob(np.abs(psi) ** 2 / psi2_norm, -x_max, -1.)
     trans = prob(np.abs(psi) ** 2 / psi2_norm, 1., x_max)
     print(f'Reflection probability: {round(refl, 4)}\n'
