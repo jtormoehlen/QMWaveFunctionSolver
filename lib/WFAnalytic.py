@@ -21,8 +21,7 @@ D = (F / 2) * (1 + (1j * p0 / k0)) * np.exp(-k0 + 1j * p0)
 # Computation of GAUSS-HERMITE abscissas and weights.
 x_H, w = np.polynomial.hermite.hermgauss(200)
 
-k_b = wg.kb_a
-k_ = np.sqrt(E) * k_b
+K = 2 * wg.sigma_p / (2 * np.pi * wg.sigma_p) ** 0.25
 
 
 def phi_alpha(x, t, p=0):
@@ -51,7 +50,7 @@ def psi(x, t, phi=phi_alpha):
     """Approximation of wavepacket by GAUSS-HERMITE procedure."""
     psi = 0
     for j in range(0, len(x_H), 1):
-        psi += w[j] * phi(x, t, x_H[j])
+        psi += K * w[j] * phi(x, t, x_H[j])
     return psi
 
 

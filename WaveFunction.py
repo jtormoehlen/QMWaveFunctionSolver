@@ -23,17 +23,14 @@ def main(save=False):
 
     gh = wa.psi(x, 0)
     psi_gh, = ax.plot(x, np.abs(gh) ** 2, label='Gauss-Hermite')
-    norm_gh = wg.prob(np.abs(gh) ** 2)
 
     wg.params()
     wa.probs(wa.psi(x, t[-1]))
 
     rk = wn.RKSolver()
     psi_rk, = ax.plot(x, np.abs(rk.psi(0)) ** 2, label='Runge-Kutta')
-    norm_rk = wg.prob(np.abs(rk.psi(0)) ** 2)
     cn = wn.CNSolver()
     psi_cn, = ax.plot(x, np.abs(cn.psi(0)) ** 2, label='Crank-Nicolson')
-    norm_cn = wg.prob(np.abs(cn.psi(0)) ** 2)
 
     p, = ax.plot(wg.x_0, 0., 'ok')  # classical p position x(0)
 
@@ -43,8 +40,8 @@ def main(save=False):
         :return: wave packets as [[Line2D,...],[Line2D,...],...]
         """
         ax.set_xlim(min(x), max(x))
-        ax.set_ylim(-0.1 * max(np.abs(gh) ** 2 / norm_gh),
-                    max(np.abs(gh) ** 2 / norm_gh) + 0.1 * max(np.abs(gh) ** 2 / norm_gh))
+        ax.set_ylim(-0.1 * max(np.abs(gh) ** 2),
+                    max(np.abs(gh) ** 2) + 0.1 * max(np.abs(gh) ** 2))
         ax.set_xlabel('Position $x/$a')
         ax.set_ylabel('Probability density $|\psi(x,t)|^2/$a$^{-1}$')
         ax.plot(x, wg.V(x), '--k')
@@ -57,11 +54,11 @@ def main(save=False):
         :param i: time (frame) in (t_0,t_1,...,t_N)
         :return: wave packets as [[Line2D,...],[Line2D,...],...]
         """
-        psi2_gh = np.abs(wa.psi(x, t[i])) ** 2 / norm_gh
+        psi2_gh = np.abs(wa.psi(x, t[i])) ** 2
         psi_gh.set_ydata(psi2_gh)
-        psi2_rk = np.abs(rk.psi(i)) ** 2 / norm_rk
+        psi2_rk = np.abs(rk.psi(i)) ** 2
         psi_rk.set_ydata(psi2_rk)
-        psi2_cn = np.abs(cn.psi(i)) ** 2 / norm_cn
+        psi2_cn = np.abs(cn.psi(i)) ** 2
         psi_cn.set_ydata(psi2_cn)
 
         p.set_xdata(wa.x_t(t[i]))

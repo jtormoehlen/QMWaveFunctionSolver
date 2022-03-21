@@ -20,6 +20,8 @@ x_max = -2. * x_0
 n_x = 1000
 x_j, dx = np.linspace(-x_max, x_max, n_x, retstep=True)
 
+K = 1. / (np.pi * sigma_x) ** 0.25
+
 
 def psi_0(x):
     """
@@ -29,7 +31,7 @@ def psi_0(x):
     """
     psi = np.zeros(x.size, complex)
     for i in range(x.size):
-        psi[i] = np.exp(-(x[i] - x_0) ** 2 / (sigma_x ** 2)) * np.exp(1j * p_0 * x[i])
+        psi[i] = K * np.exp(-(x[i] - x_0) ** 2 / (sigma_x ** 2)) * np.exp(1j * p_0 * (x[i] - x_0))
     return psi
 
 
