@@ -5,7 +5,7 @@ E = wg.E
 m = wg.m
 
 # dimensionless wave numbers k_0 and kappa_0
-p0 = wg.p_0
+p0 = wg.p0
 if E <= 1.:
     k0 = np.sqrt(m * (1. - E))
 else:
@@ -24,33 +24,33 @@ x_H, w = np.polynomial.hermite.hermgauss(200)
 K = 2 * wg.sigma_p / (2 * np.pi * wg.sigma_p) ** 0.25
 
 
-def phi_alpha(x, t, p=0):
+def phi_alpha(x, t, p=p0):
     """Stationary solution (scattering by a rectangle-barrier) superposed with psi_t."""
     psi_xt = np.zeros(x.size, complex)
-    p_0 = 2 * wg.sigma_p * p + p0  # momentum substitution for GH-proc
-    if p_0 ** 2 <= m:
-        k_0 = np.sqrt(m - p_0 ** 2)
+    if p ** 2 <= m:
+        k = np.sqrt(m - p ** 2)
     else:
-        k_0 = 1j * np.sqrt(p_0 ** 2 - m)
-    t = t - wg.t_col(p_0)  # set time t->t-t_col
+        k = 1j * np.sqrt(p ** 2 - m)
+    t = t - wg.t_0(p)  # set time t->t-t_col
 
     for i in range(x.size):
-        if x[i] < -1.:
-            psi_xt[i] = (A * np.exp(1j * p_0 * x[i]) +
-                         B * np.exp(-1j * p_0 * x[i]))
-        elif -1. <= x[i] <= 1.:
-            psi_xt[i] = (C * np.exp(-k_0 * x[i]) +
-                         D * np.exp(k_0 * x[i]))
-        elif x[i] > 1.:
-            psi_xt[i] = F * np.exp(1j * p_0 * x[i])
-    return psi_xt * wg.psi_t(t, p_0)
+        if x[i] < -1.:  # reflection region
+            psi_xt[i] = (A * np.exp(1j * p * x[i]) +
+                         B * np.exp(-1j * p * x[i]))
+        elif -1. <= x[i] <= 1.:  # barrier region
+            psi_xt[i] = (C * np.exp(-k * x[i]) +
+                         D * np.exp(k * x[i]))
+        elif x[i] > 1.:  # transmission region
+            psi_xt[i] = F * np.exp(1j * p * x[i])
+    return psi_xt * wg.psi_t(t, p)  # superpose time-dependent solution
 
 
 def psi(x, t, phi=phi_alpha):
     """Approximation of wavepacket by GAUSS-HERMITE procedure."""
     psi = 0
     for j in range(0, len(x_H), 1):
-        psi += K * w[j] * phi(x, t, x_H[j])
+        p = 2 * wg.sigma_p * x_H[j] + p0  # momentum substitution for GH-proc
+        psi += K * w[j] * phi(x, t, p)
     return psi
 
 
@@ -69,10 +69,16 @@ def x_t(t):
     :param t: time
     :return: position
     """
-    x_0 = wg.x_0  # start pos
+    x_0 = wg.x0  # start pos
     x_pos = x_0 + (2. * p0 / m) * t  # pos at time t
     if x_pos >= -1.:
         t_col = (-1. - x_0) / (2. * p0 / m)
         return -1. - (2. * p0 / m) * (t - t_col)
     else:
         return x_pos
+
+
+def v_x(x):
+    E = p0 ** 2 / m
+    V = wg.V(x)
+    return 0

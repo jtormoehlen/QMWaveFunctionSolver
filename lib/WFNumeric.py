@@ -10,11 +10,10 @@ V = wg.V(x)
 m = wg.m
 psi_0 = wg.psi_0(x)
 
-# discrete time coords (t_0,t_0+dt,...,t_col)
-t_0 = 0.0
-t_N = wg.t_col()
+# discrete time coords (0,dt,2*dt,...,t_0)
+t_N = wg.t_0()
 dt = t_N / 100
-t_n = np.arange(t_0, t_N, dt)
+t_n = np.arange(0.0, t_N, dt)
 
 
 def hamilton():
@@ -28,7 +27,7 @@ class RKSolver:
     """Solution of schrodinger-equation by RUNGE-KUTTA procedure for initial free wave packet."""
     def __init__(self):
         self.__sol = integrate.solve_ivp(self.__dt_psi, y0=psi_0,
-                                         t_span=[t_0, t_N], t_eval=t_n, method='RK23')
+                                         t_span=[min(t_n), max(t_n)], t_eval=t_n, method='RK23')
         self.probs()
 
     @staticmethod

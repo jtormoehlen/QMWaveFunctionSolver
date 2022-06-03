@@ -7,16 +7,16 @@ m_e = const.m_e  # electron mass
 hbar = const.hbar  # planck's reduced constant
 
 kb_a = np.sqrt(2. * m_e * V_b) * a_b / hbar  # barrier strength
-m = kb_a ** 2  # dimensionless mass
+m = kb_a ** 2  # mass
 
 E = 0.9  # E_0/V_0
-p_0 = np.sqrt(m * E)  # momentum
-sigma_p = p_0 / 10  # momentum width
+p0 = np.sqrt(m * E)  # momentum
+sigma_p = p0 / 10  # momentum width
 sigma_x = 1. / sigma_p  # position width
-x_0 = -1 - 5 * sigma_x  # initial position
+x0 = -1 - 5 * sigma_x  # initial position
 
 # discrete spatial coords (-2*x_0,-2*x_0+dx,...,2*x_0)
-x_max = -2. * x_0
+x_max = -2. * x0
 n_x = 1000
 x_j, dx = np.linspace(-x_max, x_max, n_x, retstep=True)
 
@@ -31,7 +31,7 @@ def psi_0(x):
     """
     psi = np.zeros(x.size, complex)
     for i in range(x.size):
-        psi[i] = K * np.exp(-(x[i] - x_0) ** 2 / (sigma_x ** 2)) * np.exp(1j * p_0 * (x[i] - x_0))
+        psi[i] = K * np.exp(-(x[i] - x0) ** 2 / (sigma_x ** 2)) * np.exp(1j * p0 * (x[i] - x0))
     return psi
 
 
@@ -54,13 +54,13 @@ def V(x):
     return np.heaviside(1. - np.abs(x), 1.)
 
 
-def t_col(p=p_0):
+def t_0(p=p0):
     """
     Collision time t_col with barrier for classical particle.
     :param p: momentum
     :return: collision time
     """
-    return -x_0 / (p / m)
+    return -x0 / (p / m)
 
 
 def prob(psi2, x_start=-x_max, x_end=x_max):
@@ -85,7 +85,7 @@ def params():
     print('Parameters######################\n'
           f'Barrier strength: {round(kb_a, 2)}\n'
           f'E/V-ratio: {round(E, 2)}\n'
-          f'Initial position: {round(x_0, 2)}\n'
+          f'Initial position: {round(x0, 2)}\n'
           '################################')
 
 

@@ -32,7 +32,7 @@ def main(save=False):
     cn = wn.CNSolver()
     psi_cn, = ax.plot(x, np.abs(cn.psi(0)) ** 2, label='Crank-Nicolson')
 
-    p, = ax.plot(wg.x_0, 0., 'ok')  # classical p position x(0)
+    p, = ax.plot(wg.x0, 0., 'ok')  # classical p position x(0)
 
     def init():
         """
