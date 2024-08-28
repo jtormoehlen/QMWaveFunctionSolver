@@ -1,3 +1,4 @@
 /.idea
 /src/img/temporary/
 WFView.py
+/lib/__pycache__/
