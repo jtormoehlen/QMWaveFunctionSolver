@@ -6,10 +6,10 @@ $$
 $$
 mit Hermite Polynome (und Nullstellen)
 $$
-\begin{align}
-    \tilde{H}_{-1}(\tilde{x}) &= 0, \quad \tilde{H}_{0}(\tilde{x}) = 1\\
-    \tilde{H}_{j}(\tilde{x}) &= 2\tilde{x}\tilde{H}_{j-1}(\tilde{x})-2(j-1)\tilde{H}_{j-2}(\tilde{x}) \quad \text{für} \quad j=1,\dots,n
-\end{align}
+\begin{align*}
+    \tilde{H}_{-1}(\tilde{x}) &= 0, \tilde{H}_{0}(\tilde{x}) = 1\\
+    \tilde{H}_{j}(\tilde{x}) &= 2\tilde{x}\tilde{H}_{j-1}(\tilde{x})-2(j-1)\tilde{H}_{j-2}(\tilde{x}) \text{    für    } j=1,\dots,n
+\end{align*}
 $$
 und Gewichte
 $$
