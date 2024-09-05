@@ -4,14 +4,14 @@ A tool to solve Quantum Mechanics based problems. The programm takes an input fr
 $$
 \int_{-\infty}^{\infty} \mathrm{d}\tilde{x} \, \mathrm{exp}{(-\tilde{x}^2)} f(\tilde{x}) \simeq \sum_{j=1}^{n} w_j f(\tilde{x}_j)
 $$
-mit Hermite Polynome (und Nullstellen)
+<!-- mit Hermite Polynome (und Nullstellen)
 $$
 \begin{align*}
     \tilde{H}_{-1}(\tilde{x}) &= 0, \tilde{H}_{0}(\tilde{x}) = 1\\
     \tilde{H}_{j}(\tilde{x}) &= 2\tilde{x}\tilde{H}_{j-1}(\tilde{x})-2(j-1)\tilde{H}_{j-2}(\tilde{x}) \text{    für    } j=1,\dots,n
 \end{align*}
 $$
-und Gewichte
+und Gewichte -->
 $$
 w_j = \frac{2^{n-1}n!\sqrt{\pi}}{n^2\tilde{H}_{n-1}(\tilde{x}_j)^2}
 $$
