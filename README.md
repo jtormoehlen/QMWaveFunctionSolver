@@ -17,7 +17,7 @@ w_j = \frac{2^{n-1}n!\sqrt{\pi}}{n^2\tilde{H}_{n-1}(\tilde{x}_j)^2}
 $$
 <!-- Approximation des Wellenpakets -->
 $$
-\psi(x, t) \simeq N \sum_{j=1}^{n} w_j \exp ( -\text{i}\frac{(2\sigma_p \tilde{x}_j+p_0)^2}{2m\hbar}t ) \sum_{\alpha} \varphi_\alpha(x, 2\sigma_p \tilde{x}_j+p_0)
+\psi(x, t) \simeq N \sum_{j=1}^{n} w_j \mathrm{exp} ( -\text{i}\frac{(2\sigma_p \tilde{x}_j+p_0)^2}{2m\hbar}t ) \sum_{\alpha} \varphi_{\alpha}(x, 2\sigma_p \tilde{x}_j+p_0)
 $$
 ## Runge-Kutta procedure
 [SciPy API: `solve_ivp(..)`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.solve_ivp.html)
