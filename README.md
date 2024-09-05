@@ -1,13 +1,13 @@
 # QMWaveFunctionSolver
 A tool to solve Quantum Mechanics based problems. The programm takes an input from `WaveFunction.py` and finds numerical solutions which then may be plotted in `WFAnimation.py`. The numerical solutions are computed by the SciPy based Runge-Kutta and the self-implemented Crank-Nicolson procedures for a time-independent potential. For comparison one can set up the analytical energy eigenfunctions so the solver evaluates an initial free wave packet by Gauss-Hermite integration. 
 ## Gauss-Hermite integration
-$$
+<!-- $$
 \begin{equation*}
 \int_{-\infty}^{\infty} \mathrm{d}\tilde{x} \, \mathrm{exp}{(-\tilde{x}^2)} f(\tilde{x}) \simeq \sum_{j=1}^{n} w_j f(\tilde{x}_j)
 \end{equation*}
-$$
+$$ -->
 mit Ordnung $n$, Hermite Polynome
-<!-- $$
+$$
 \begin{align}
     \tilde{H}_{-1}(\tilde{x}) &= 0, \quad \tilde{H}_{0}(\tilde{x}) = 1\\
     \tilde{H}_{j}(\tilde{x}) &= 2\tilde{x}\tilde{H}_{j-1}(\tilde{x})-2(j-1)\tilde{H}_{j-2}(\tilde{x}) \quad \text{für} \quad j=1,\dots,n
@@ -45,4 +45,4 @@ $$
     \vdots & \vdots & \vdots & \ddots & \vdots\\
     0 & 0 & 0 & \cdots & V_J
 \end{pmatrix}
-$$ -->
+$$
