@@ -14,7 +14,7 @@ $$
 \end{align}
 $$
 Nullstellen $\tilde{x}_j$ und Gewichte
-$$
+<!-- $$
 w_j = \frac{2^{n-1}n!\sqrt{\pi}}{n^2\tilde{H}_{n-1}(\tilde{x}_j)^2}
 $$
 Approximation des Wellenpakets
@@ -45,4 +45,4 @@ $$
     \vdots & \vdots & \vdots & \ddots & \vdots\\
     0 & 0 & 0 & \cdots & V_J
 \end{pmatrix}
-$$
+$$ -->
