@@ -15,18 +15,17 @@ und Gewichte -->
 $$
 w_j = \frac{2^{n-1}n!\sqrt{\pi}}{n^2\tilde{H}_{n-1}(\tilde{x}_j)^2}
 $$
-<!-- Approximation des Wellenpakets -->
-
+<!-- Approximation des Wellenpakets
 $$
 \psi(x, t) \simeq N \sum_{j=1}^{n} w_j \mathrm{exp} ( -\mathrm{i}\frac{(2\sigma_p \tilde{x}_j+p_0)^2}{2m\hbar}t ) \sum_{\alpha} \varphi_{\alpha}(x, 2\sigma_p \tilde{x}_j+p_0)
-$$
+$$ -->
 ## Runge-Kutta procedure
 [SciPy API: `solve_ivp(..)`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.solve_ivp.html)
 ## Crank-Nicolson procedure
-<!-- $$
+$$
 \psi_j^{n+1} = ( \textbf{I} - \frac{\Delta t}{2\text{i}\hbar}\mathbf{H} )^{-1} ( \textbf{I} + \frac{\Delta t}{2\text{i}\hbar}\mathbf{H} ) \psi_j^n
 $$
-mit Einheitsmatrix $\textbf{I}$ und Hamiltonoperator -->
+<!-- mit Einheitsmatrix $\textbf{I}$ und Hamiltonoperator -->
 $$
 \textbf{H} = -\frac{\hbar^2}{2m(\Delta x)^2}    
 \begin{pmatrix}
