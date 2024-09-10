@@ -10,12 +10,12 @@ from expl.WFBarrier import Barrier
 plt.style.use('./lib/figstyle.mpstyle')
 FPS = 10  # frames per second
 
-# Start animation
-# :param save: animation if true
+# start animation
+# save: generate .gif in /img if true
 def main(save):
-    # Compute |psi(x,0)|^2 by GH; |psi(x,t)|^2 by RK and CN
-    # Plot |psi(x,0)|^2 as [Line2D,...]
-    # Compute norm |psi(x,0)|^2
+    # compute |psi(x,0)|^2 by GH; |psi(x,t)|^2 by RK and CN
+    # plot |psi(x,0)|^2 as [Line2D,...]
+    # compute norm |psi(x,0)|^2
     fig, ax = plt.subplots()
 
     model = Barrier("Barriere")
@@ -34,8 +34,8 @@ def main(save):
 
     # p, = ax.plot(model.x0, 0., 'ok')  # classical p position x(0)
 
-    # Plot potential V(x)
-    # :return: wave packets as [[Line2D,...],[Line2D,...],...]
+    # plot potential V(x)
+    # return: wave packets as [[Line2D,...],[Line2D,...],...]
     def init():
         ax.set_xlim(min(x), max(x))
         ax.set_ylim(-0.1*max(np.abs(gh.psi(0))**2),
@@ -45,10 +45,10 @@ def main(save):
         ax.plot(x, model.V(x), '--k')
         return pgh, prk, pcn,
 
-    # 1.) Compute normalized |psi(x,i)|^2 by GH, RK and CN
-    # 2.) Plot |psi(x,i)|^2 as [Line2D,...]
-    # :param i: time (frame) in (t_0,t_1,...,t_N)
-    # :return: wave packets as [[Line2D,...],[Line2D,...],...]
+    # 1.) compute normalized |psi(x,i)|^2 by GH, RK and CN
+    # 2.) plot |psi(x,i)|^2 as [Line2D,...]
+    # i: time (frame) in (1,2,...,|tn|)
+    # return: wave packets as [[Line2D,...],[Line2D,...],...]
     def update(i):
         pgh.set_ydata(np.abs(gh.psi(t[i]))**2)
         prk.set_ydata(np.abs(rk.psi(i))**2)

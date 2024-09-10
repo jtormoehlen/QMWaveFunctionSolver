@@ -1,22 +1,25 @@
 import numpy as np
 
-# Computation of GAUSS-HERMITE abscissas and weights
+# import Gauss-Hermite abscissas and weights from NumPy
 hx, w = np.polynomial.hermite.hermgauss(200)
 
 class GHSolver():
 
+    # wave packet approximated by Gauss-Hermite integration of energy eigenfunctions
     def __init__(self, model):
         self.model = model
 
-    # Approximation of wavepacket by GAUSS-HERMITE procedure
+    # wave packet approximated by Gauss-Hermite integration
+    # t: time coord
+    # return: wave packet
     def psi(self, t):
         psi = 0
         for j in range(0, len(hx), 1):
-            p = 2*self.model.sigp*hx[j]+self.model.p0  # momentum substitution for GH-proc
+            p = 2*self.model.sigp*hx[j]+self.model.p0  #
             psi += self.model.C*w[j]*self.model.phi(self.model.x, t, p)
         return psi
 
-    # Scattering probabilities
+    # scattering probabilities
     def probs(self, psi):
         # print('\nAnalytical\n'
         #     f'Reflection probability: {round(np.abs(self.B/self.A)**2, 4)}\n'
@@ -24,8 +27,8 @@ class GHSolver():
         print('\nGAUSS-HERMITE')
         self.model.probs(psi)
 
-    # Position of classical particle x(t)
-    # :param t: time
-    # :return: position
+    # classical particle position x(t)
+    # t: time coord
+    # return: position
     def x_t(self, t):
         pass
