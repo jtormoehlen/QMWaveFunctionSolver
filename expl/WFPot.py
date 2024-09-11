@@ -2,11 +2,12 @@ import numpy as np
 
 from lib.WaveFunction import Model
 
-m = 1.0  # mass [hbar^2/(2a^2 E_1)]
-p0 = 4*np.pi**3  # avg init momentum [hbar/a]
-x0 = 0.5  # avg init position [a]
-sigp = p0/10  # momentum width
-sigx = 1/sigp  # position width
+m = 1.0 # mass [hbar^2/(2a^2 E_1)]
+p0 = 4*np.pi**3 # avg init momentum [hbar/a]
+x0 = 0.5 # avg init position [a]
+sigp = p0/10 # momentum width
+sigx = 1/sigp # position width
+V0 = 1.0E6 # potential height
 
 # discretized spatial coords (-2*x0,-2*x0+dx,...,2*x0)
 a = 0.0
@@ -18,15 +19,13 @@ x, dx = np.linspace(x1, xn, nx, retstep=True)
 
 t0 = lambda p: x0*m/p
 # discretized time coords (0,dt,2*dt,...,t0)
-tn = 4*(1.0-x0)*m/p0
+# tn = 4*(1.0-x0)*m/p0
+tn = 4*t0(p0)*(1/x0-1)
 nt = 500
 t, dt = np.linspace(0.0, tn, nt, retstep=True)
 
-# integration constants
-# K = 1/(np.pi*sigx)**0.25
-# C = 2*sigp/(2*np.pi*sigp)**0.25
-C = sigp/(np.pi*sigp**2)**0.25
-K = sigp/(np.pi*sigp**2)**0.25
+# integration constants (auto-normalization)
+C = 1.0
 
 class Pot(Model):
 
@@ -54,13 +53,13 @@ class Pot(Model):
         t = t+t0(p)
         return np.exp(-1j*(p**2/m)*t)
 
-    # rectangle barriere using NumPys Heaviside function
+    # emulate infinite potential pot with V0>>E
     # return: potential
     def V(self, x):
         V = np.zeros(x.size)
         for i, xi in enumerate(x):
             if xi < 0.0 or xi > 1.0:
-                V[i] = 1.0E6
+                V[i] = V0
         return V
 
     # stationary solution (particle in pot) superposed with tau(t)
@@ -73,13 +72,13 @@ class Pot(Model):
         return phif*self.tau(t, p)
     
     # initial conditions information
-    def params(self):
-        # print('Parameters######################\n'
-        #     f'Barrier strength eta: {round(eta, 2)}\n'
-        #     f'Potential V: {round(V, 2)}\n'
-        #     f'Initial position x0: {round(x0, 2)}\n'
-        #     '################################')
-        print('NULL')
+    def params(self, psi=None):
+        print('Parameters######################\n'
+            f'Pot width: {round(b-a, 2)}\n'
+            f'Energy ratio E/V: {round(np.sqrt(m*p0)/V0, 2)}\n'
+            f'Initial position x0: {round(x0, 2)}\n'
+            '################################')
+        if psi is not None: self.probs(psi) 
 
     # scattering probabilities
     # param psi: (un-)normalized wave function

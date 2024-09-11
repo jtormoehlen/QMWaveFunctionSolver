@@ -5,11 +5,11 @@ from matplotlib.animation import FuncAnimation, PillowWriter
 
 from lib.WFNumeric import RKSolver, CNSolver
 from lib.WFAnalytic import GHSolver
-from expl.WFBarrier import Barrier
-# from expl.WFPot import Pot
+# from expl.WFBarrier import Barrier
+from expl.WFPot import Pot
 
 plt.style.use('./lib/figstyle.mpstyle')
-FPS = 10  # frames per second
+FPS = 10 # frames per second
 
 # start animation
 # save: generate .gif in /img if true
@@ -19,9 +19,9 @@ def main(save):
     # compute norm |psi(x,0)|^2
     fig, ax = plt.subplots()
 
-    # model = Pot("Pot")
-    model = Barrier("Barrier")
-    x = model.x  # spatial coords
+    model = Pot("Pot")
+    # model = Barrier("Barrier")
+    x = model.x # spatial coords
 
     gh = GHSolver(model)
     model.params(gh.psi(-1))
@@ -31,11 +31,6 @@ def main(save):
     prk, = ax.plot(x, np.abs(rk.psi(0))**2, label='Runge-Kutta')
     pcn, = ax.plot(x, np.abs(cn.psi(0))**2, label='Crank-Nicolson')
     # p, = ax.plot(model.x0, 0., 'ok')  # classical p position x(0)
-    wavefuncs = [
-        pgh,
-        prk,
-        pcn
-    ]
 
     # plot potential V(x)
     # return: wave packets as [[Line2D,...],[Line2D,...],...]
@@ -46,17 +41,20 @@ def main(save):
         ax.set_xlabel('Position $x/$a')
         ax.set_ylabel('Probability density $|\psi(x,t)|^2/$a$^{-1}$')
         ax.plot(x, model.V(x), '--k')
-        return *wavefuncs,
+        return pgh, prk, pcn,
 
     # 1.) compute normalized |psi(x,i)|^2 by GH, RK and CN
     # 2.) plot |psi(x,i)|^2 as [Line2D,...]
     # i: time (frame) in (1,2,...,|tn|)
     # return: wave packets as [[Line2D,...],[Line2D,...],...]
     def update(i):
-        for j in wavefuncs:
-            j.set_ydata(np.abs(gh.psi(i))**2)
+        # for j in wavefuncs:
+        #     j.set_ydata(np.abs(gh.psi(i))**2)
+        pgh.set_ydata(np.abs(gh.psi(i))**2)
+        prk.set_ydata(np.abs(rk.psi(i))**2)
+        pcn.set_ydata(np.abs(cn.psi(i))**2)
         # p.set_xdata(gh.x_t(t[i]))
-        return *wavefuncs,
+        return pgh, prk, pcn,
 
     plt.legend()
     anim = FuncAnimation(fig, update, init_func=init,

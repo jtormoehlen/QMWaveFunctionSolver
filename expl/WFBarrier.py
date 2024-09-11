@@ -3,19 +3,19 @@ import scipy.constants as const
 
 from lib.WaveFunction import Model
 
-a_b = 5*const.angstrom  # barrier width
-V_b = 0.25*const.eV  # barrier height V_b
-m_e = const.m_e  # electron mass
-hbar = const.hbar  # reduced plancks constant
+a_b = 5*const.angstrom # barrier width
+V_b = 0.25*const.eV # barrier height V_b
+m_e = const.m_e # electron mass
+hbar = const.hbar # reduced plancks constant
 
-eta = np.sqrt(2*m_e*V_b)*a_b/hbar  # barrier strength
-m = eta**2  # mass
+eta = np.sqrt(2*m_e*V_b)*a_b/hbar # barrier strength
+m = eta**2 # mass
 
-E = 0.9  # E_0/V_0
-p0 = np.sqrt(m*E)  # momentum
-sigp = p0/10  # momentum width
-sigx = 1/sigp  # position width
-x0 = -1-5*sigx  # initial position
+E = 0.9 # E_0/V_0
+p0 = np.sqrt(m*E) # momentum
+sigp = p0/10 # momentum width
+sigx = 1/sigp # position width
+x0 = -1-5*sigx # initial position
 
 # discretized spatial coords (-2*x0,-2*x0+dx,...,2*x0)
 xn = -2*x0
@@ -26,7 +26,7 @@ x, dx = np.linspace(-xn, xn, nx, retstep=True)
 t0 = lambda p: -x0/(p/m)
 # discretized time coords (0,dt,2*dt,...,t0)
 tn = t0(p0)
-nt = 100
+nt = 200
 t, dt = np.linspace(0.0, tn, nt, retstep=True)
 
 # integration constants
@@ -77,14 +77,14 @@ class Barrier(Model):
 
         psif = np.zeros(x.size, complex)
         for i in range(x.size):
-            if x[i] < -1.0:  # reflection region
+            if x[i] < -1.0: # reflection region
                 psif[i] = (A * np.exp(1j*p*x[i])+B*np.exp(-1j*p*x[i]))
-            elif -1.0 <= x[i] <= 1.0:  # barrier region
+            elif -1.0 <= x[i] <= 1.0: # barrier region
                 k = np.sqrt(m-p**2) if p**2 <= m else 1j*np.sqrt(p**2-m)
                 psif[i] = (C*np.exp(-k*x[i])+D*np.exp(k*x[i]))
-            elif x[i] > 1.0:  # transmission region
+            elif x[i] > 1.0: # transmission region
                 psif[i] = F*np.exp(1j*p*x[i])
-        t = t-t0(p)  # set time t'->t-t0
+        t = t-t0(p) # set time t'->t-t0
         return psif*self.tau(t, p)
     
     # initial conditions information
