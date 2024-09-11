@@ -47,3 +47,8 @@ class Model:
             if a <= value <= b:
                 P += psi2[index]*dx
         return P
+    
+    @staticmethod
+    def normalize(psi, x, dx, a, b):
+        norm = Model.prob(np.abs(psi)**2, x, dx, a, b)
+        return psi/np.sqrt(norm)

@@ -47,8 +47,9 @@ class Barrier(Model):
     # x: spatial coords
     # return: initial wave packet
     def psi0(self, x, p=p0):
-        return np.ones(x.size, complex)*\
-            K*np.exp(-(x-x0)**2/(sigx**2))*np.exp(1j*p*(x-x0))
+        psif = np.ones(x.size, complex)*\
+            np.exp(-(x-x0)**2/(sigx**2))*np.exp(1j*p*(x-x0))
+        return Model.normalize(psif, x, dx, -xn, xn)
 
     # time-dependent solution of schrodinger equation tau(t)
     # t: time coord
@@ -89,17 +90,17 @@ class Barrier(Model):
     # initial conditions information
     def params(self):
         print('Parameters######################\n'
-            f'Barrier strength: {round(eta, 2)}\n'
-            f'E/V-ratio: {round(E, 2)}\n'
-            f'Initial position: {round(x0, 2)}\n'
+            f'Barrier strength eta: {round(eta, 2)}\n'
+            f'Ratio E/V: {round(E, 2)}\n'
+            f'Initial position x0: {round(x0, 2)}\n'
             '################################')
 
     # scattering probabilities
     # param psi: (un-)normalized wave function
     def probs(self, psi):
-        norm = Model.prob(np.abs(psi)**2, self.x, self.dx, min(self.x), max(self.x))
-        refl = Model.prob(np.abs(psi)**2/norm, self.x, self.dx, -xn, -1.0)
-        trans = Model.prob(np.abs(psi)**2/norm, self.x, self.dx, 1.0, xn)
+        norm = Model.prob(np.abs(psi)**2, x, dx, min(x), max(x))
+        refl = Model.prob(np.abs(psi)**2/norm, x, dx, -xn, -1.0)
+        trans = Model.prob(np.abs(psi)**2/norm, x, dx, 1.0, xn)
         print(f'Reflection probability: {round(refl, 4)}\n'
             f'Transmission probability: {round(trans, 4)}')
         

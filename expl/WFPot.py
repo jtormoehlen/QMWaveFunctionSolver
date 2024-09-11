@@ -1,0 +1,96 @@
+import numpy as np
+
+from lib.WaveFunction import Model
+
+m = 1.0  # mass [hbar^2/(2a^2 E_1)]
+p0 = 4*np.pi**3  # avg init momentum [hbar/a]
+x0 = 0.5  # avg init position [a]
+sigp = p0/10  # momentum width
+sigx = 1/sigp  # position width
+
+# discretized spatial coords (-2*x0,-2*x0+dx,...,2*x0)
+a = 0.0
+b = 1.0
+x1 = a-0.1
+xn = b+0.1
+nx = 1000
+x, dx = np.linspace(x1, xn, nx, retstep=True)
+
+t0 = lambda p: x0*m/p
+# discretized time coords (0,dt,2*dt,...,t0)
+tn = 4*(1.0-x0)*m/p0
+nt = 500
+t, dt = np.linspace(0.0, tn, nt, retstep=True)
+
+# integration constants
+# K = 1/(np.pi*sigx)**0.25
+# C = 2*sigp/(2*np.pi*sigp)**0.25
+C = sigp/(np.pi*sigp**2)**0.25
+K = sigp/(np.pi*sigp**2)**0.25
+
+class Pot(Model):
+
+    def __init__(self, name):
+        self.name = name
+        self.x, self.dx = x, dx
+        self.t, self.dt = t, dt
+        self.m = m
+        self.p0, self.sigp = p0, sigp
+        self.C = C
+
+    # initial wave packet psi(x,0) with average momentum p0
+    # x: spatial coords
+    # return: initial wave packet
+    def psi0(self, x, p=p0):
+        psif = np.ones(x.size, complex)*\
+            np.exp(-(x-x0)**2/(sigx**2))*np.exp(1j*p*(x-x0))
+        return Model.normalize(psif, x, dx, a, b)
+
+    # time-dependent solution of schrodinger equation tau(t)
+    # t: time coord
+    # p: momentum
+    # return: time-dependent solution
+    def tau(self, t, p):
+        t = t+t0(p)
+        return np.exp(-1j*(p**2/m)*t)
+
+    # rectangle barriere using NumPys Heaviside function
+    # return: potential
+    def V(self, x):
+        V = np.zeros(x.size)
+        for i, xi in enumerate(x):
+            if xi < 0.0 or xi > 1.0:
+                V[i] = 1.0E6
+        return V
+
+    # stationary solution (particle in pot) superposed with tau(t)
+    def phi(self, x, t, p):
+
+        phif = np.zeros(x.size, complex)
+        for i in range(x.size):
+            if 0.0 < x[i] < 1.0:
+                phif[i] = np.sin(p*x[i])
+        return phif*self.tau(t, p)
+    
+    # initial conditions information
+    def params(self):
+        # print('Parameters######################\n'
+        #     f'Barrier strength eta: {round(eta, 2)}\n'
+        #     f'Potential V: {round(V, 2)}\n'
+        #     f'Initial position x0: {round(x0, 2)}\n'
+        #     '################################')
+        print('NULL')
+
+    # scattering probabilities
+    # param psi: (un-)normalized wave function
+    def probs(self, psi):
+        norm = Model.prob(np.abs(psi)**2, x, dx, min(x), max(x))
+        print(norm)
+        
+    # def x_t(self, t):
+    #     x_pos = x_0+(2*p0/m)*t  # type: ignore # pos at time t
+    #     if x_pos >= -1.0:
+    #         t_col = (-1-x0)/(2*p0/m)
+    #         return -1-(2*p0/m)*(t-t_col)
+    #     else:
+    #         return x_pos

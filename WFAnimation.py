@@ -5,7 +5,8 @@ from matplotlib.animation import FuncAnimation, PillowWriter
 
 from lib.WFNumeric import RKSolver, CNSolver
 from lib.WFAnalytic import GHSolver
-from expl.WFBarrier import Barrier
+# from expl.WFBarrier import Barrier
+from expl.WFPot import Pot
 
 plt.style.use('./lib/figstyle.mpstyle')
 FPS = 10  # frames per second
@@ -18,7 +19,8 @@ def main(save):
     # compute norm |psi(x,0)|^2
     fig, ax = plt.subplots()
 
-    model = Barrier("Barriere")
+    model = Pot("Pot")
+    # model = Barrier("Barrier")
     x, t = model.x, model.t  # spatial and time coords
 
     gh = GHSolver(model)
@@ -68,4 +70,4 @@ def main(save):
         plt.show()
 
 if __name__ == '__main__':
-    main(save=False)
+    main(save=True)

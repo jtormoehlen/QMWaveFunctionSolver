@@ -1,7 +1,7 @@
 import numpy as np
 
 # import Gauss-Hermite abscissas and weights from NumPy
-hx, w = np.polynomial.hermite.hermgauss(200)
+hx, w = np.polynomial.hermite.hermgauss(300)
 
 class GHSolver():
 
@@ -13,11 +13,11 @@ class GHSolver():
     # t: time coord
     # return: wave packet
     def psi(self, t):
-        psi = 0
+        psif = 0
         for j in range(0, len(hx), 1):
-            p = 2*self.model.sigp*hx[j]+self.model.p0  #
-            psi += self.model.C*w[j]*self.model.phi(self.model.x, t, p)
-        return psi
+            p = 2*self.model.sigp*hx[j]+self.model.p0
+            psif += self.model.C*w[j]*self.model.phi(self.model.x, t, p)
+        return self.model.normalize(psif, self.model.x, self.model.dx, min(self.model.x), max(self.model.x))
 
     # scattering probabilities
     def probs(self, psi):
