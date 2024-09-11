@@ -30,5 +30,5 @@ class GHSolver():
     # classical particle position x(t)
     # t: time coord
     # return: position
-    def x_t(self, t):
+    def xpos(self, t):
         pass

@@ -37,7 +37,7 @@ class Barrier(Model):
 
     def __init__(self, name):
         self.name = name
-        self.x, self.dx = x, dx
+        self.x, self.dx, self.x0 = x, dx, x0
         self.t, self.dt = t, dt
         self.m = m
         self.p0, self.sigp = p0, sigp
@@ -106,10 +106,10 @@ class Barrier(Model):
         print(f'Reflection probability: {round(refl, 4)}\n'
             f'Transmission probability: {round(trans, 4)}')
         
-    # def x_t(self, t):
-    #     x_pos = x_0+(2*p0/m)*t  # type: ignore # pos at time t
-    #     if x_pos >= -1.0:
-    #         t_col = (-1-x0)/(2*p0/m)
-    #         return -1-(2*p0/m)*(t-t_col)
-    #     else:
-    #         return x_pos
+    def xpos(self, i):
+        pos = x0+(2*p0/m)*t[i]
+        if pos >= -1.0:
+            tc = (-1-x0)/(2*p0/m)
+            return -1-(2*p0/m)*(t[i]-tc)
+        else:
+            return pos

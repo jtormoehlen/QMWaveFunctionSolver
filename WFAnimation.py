@@ -30,7 +30,8 @@ def main(save):
     pgh, = ax.plot(x, np.abs(gh.psi(0))**2, label='Gauss-Hermite')
     prk, = ax.plot(x, np.abs(rk.psi(0))**2, label='Runge-Kutta')
     pcn, = ax.plot(x, np.abs(cn.psi(0))**2, label='Crank-Nicolson')
-    # p, = ax.plot(model.x0, 0., 'ok')  # classical p position x(0)
+    # classical p position x(0)
+    px, = ax.plot(model.xpos(0), 0.0, 'ok') 
 
     # plot potential V(x)
     # return: wave packets as [[Line2D,...],[Line2D,...],...]
@@ -41,20 +42,18 @@ def main(save):
         ax.set_xlabel('Position $x/$a')
         ax.set_ylabel('Probability density $|\psi(x,t)|^2/$a$^{-1}$')
         ax.plot(x, model.V(x), '--k')
-        return pgh, prk, pcn,
+        return pgh, prk, pcn, px,
 
     # 1.) compute normalized |psi(x,i)|^2 by GH, RK and CN
     # 2.) plot |psi(x,i)|^2 as [Line2D,...]
     # i: time (frame) in (1,2,...,|tn|)
     # return: wave packets as [[Line2D,...],[Line2D,...],...]
     def update(i):
-        # for j in wavefuncs:
-        #     j.set_ydata(np.abs(gh.psi(i))**2)
         pgh.set_ydata(np.abs(gh.psi(i))**2)
         prk.set_ydata(np.abs(rk.psi(i))**2)
         pcn.set_ydata(np.abs(cn.psi(i))**2)
-        # p.set_xdata(gh.x_t(t[i]))
-        return pgh, prk, pcn,
+        px.set_xdata(model.xpos(i))
+        return pgh, prk, pcn, px,
 
     plt.legend()
     anim = FuncAnimation(fig, update, init_func=init,
@@ -68,4 +67,4 @@ def main(save):
         plt.show()
 
 if __name__ == '__main__':
-    main(save=False)
+    main(save=True)

@@ -31,11 +31,13 @@ class Pot(Model):
 
     def __init__(self, name):
         self.name = name
-        self.x, self.dx = x, dx
+        self.x, self.dx, self.x0 = x, dx, x0
         self.t, self.dt = t, dt
         self.m = m
         self.p0, self.sigp = p0, sigp
         self.C = C
+        self.xp = x0
+        self.xr = False
 
     # initial wave packet psi(x,0) with average momentum p0
     # x: spatial coords
@@ -85,11 +87,20 @@ class Pot(Model):
     def probs(self, psi):
         norm = Model.prob(np.abs(psi)**2, x, dx, min(x), max(x))
         print(norm)
-        
-    # def x_t(self, t):
-    #     x_pos = x_0+(2*p0/m)*t  # type: ignore # pos at time t
-    #     if x_pos >= -1.0:
-    #         t_col = (-1-x0)/(2*p0/m)
-    #         return -1-(2*p0/m)*(t-t_col)
-    #     else:
-    #         return x_pos
+
+    def xpos(self, i):
+
+        def ex(xi):
+            for i in range(len(x)):
+                if x[i]-dx/2 <= xi <= x[i]+dx/2:
+                    e = 2*p0**2/m-self.V(x)[i]
+                    if e < 0.0: 
+                        self.xr = not self.xr
+                    return e
+
+        delta = np.sqrt(2*np.abs(ex(self.xp))/m)*dt
+        if not self.xr: 
+            self.xp += delta
+        else:
+            self.xp -= delta
+        return self.xp
