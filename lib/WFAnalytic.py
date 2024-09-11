@@ -10,13 +10,13 @@ class GHSolver():
         self.model = model
 
     # wave packet approximated by Gauss-Hermite integration
-    # t: time coord
+    # i: time index in (0,1,...,|tn|)
     # return: wave packet
-    def psi(self, t):
+    def psi(self, i):
         psif = 0
         for j in range(0, len(hx), 1):
             p = 2*self.model.sigp*hx[j]+self.model.p0
-            psif += self.model.C*w[j]*self.model.phi(self.model.x, t, p)
+            psif += self.model.C*w[j]*self.model.phi(self.model.x, self.model.t[i], p)
         return self.model.normalize(psif, self.model.x, self.model.dx, min(self.model.x), max(self.model.x))
 
     # scattering probabilities

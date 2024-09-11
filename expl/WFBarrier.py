@@ -88,12 +88,14 @@ class Barrier(Model):
         return psif*self.tau(t, p)
     
     # initial conditions information
-    def params(self):
+    def params(self, psi=None):
         print('Parameters######################\n'
             f'Barrier strength eta: {round(eta, 2)}\n'
             f'Ratio E/V: {round(E, 2)}\n'
             f'Initial position x0: {round(x0, 2)}\n'
             '################################')
+        if psi is not None: self.probs(psi) 
+    
 
     # scattering probabilities
     # param psi: (un-)normalized wave function
